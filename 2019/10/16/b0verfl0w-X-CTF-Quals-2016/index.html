@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="1.先看看一些基本信息  2.查看保护  3.IDA查看反汇编代码  可以看到vul()函数存在栈溢出漏洞，但是很明显我们可以利用的空间并不大，由上图注释，s到bp距离为20字节，而bp占4字节，所以能溢出的栈空间只有50-0x20-4=14字节。所以我们再进行ROP技术就变的困难许多。 不过我们可以用Stack pivot（劫持栈指针）的方法，下面简单介绍一下，内容摘自ctf-wiki。 是什么">
+<meta name="description" content="题目地址：b0verfl0w">
 <meta name="keywords" content="pwn">
 <meta property="og:type" content="article">
 <meta property="og:title" content="b0verfl0w_X-CTF Quals 2016">
 <meta property="og:url" content="https://hc1024.github.io/2019/10/16/b0verfl0w-X-CTF-Quals-2016/index.html">
 <meta property="og:site_name" content="HC1024">
-<meta property="og:description" content="1.先看看一些基本信息  2.查看保护  3.IDA查看反汇编代码  可以看到vul()函数存在栈溢出漏洞，但是很明显我们可以利用的空间并不大，由上图注释，s到bp距离为20字节，而bp占4字节，所以能溢出的栈空间只有50-0x20-4=14字节。所以我们再进行ROP技术就变的困难许多。 不过我们可以用Stack pivot（劫持栈指针）的方法，下面简单介绍一下，内容摘自ctf-wiki。 是什么">
+<meta property="og:description" content="题目地址：b0verfl0w">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://i.loli.net/2019/10/16/JguFUIOkixjbspS.png">
 <meta property="og:image" content="https://i.loli.net/2019/10/16/ydTKs4cStGwpQ2u.png">
@@ -93,10 +93,10 @@
 <meta property="og:image" content="https://i.loli.net/2019/10/16/kwI1Yyvx48fnTD7.jpg">
 <meta property="og:image" content="https://i.loli.net/2019/10/16/zN6VkZUefGBjIOt.png">
 <meta property="og:image" content="https://i.loli.net/2019/10/16/GFbUjTdvkaJ6OE8.jpg">
-<meta property="og:updated_time" content="2019-10-16T14:24:27.692Z">
+<meta property="og:updated_time" content="2019-10-16T14:28:26.272Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="b0verfl0w_X-CTF Quals 2016">
-<meta name="twitter:description" content="1.先看看一些基本信息  2.查看保护  3.IDA查看反汇编代码  可以看到vul()函数存在栈溢出漏洞，但是很明显我们可以利用的空间并不大，由上图注释，s到bp距离为20字节，而bp占4字节，所以能溢出的栈空间只有50-0x20-4=14字节。所以我们再进行ROP技术就变的困难许多。 不过我们可以用Stack pivot（劫持栈指针）的方法，下面简单介绍一下，内容摘自ctf-wiki。 是什么">
+<meta name="twitter:description" content="题目地址：b0verfl0w">
 <meta name="twitter:image" content="https://i.loli.net/2019/10/16/JguFUIOkixjbspS.png">
 
 
@@ -378,7 +378,10 @@
       
 
       
-        <p>1.先看看一些基本信息</p>
+        <p>题目地址：<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/stackoverflow/stackprivot/X-CTF%20Quals%202016%20-%20b0verfl0w" target="_blank" rel="noopener">b0verfl0w</a></p>
+<a id="more"></a>
+
+<p>1.先看看一些基本信息</p>
 <p><img src="https://i.loli.net/2019/10/16/JguFUIOkixjbspS.png" alt="sk_pt1.png"></p>
 <p>2.查看保护</p>
 <p><img src="https://i.loli.net/2019/10/16/ydTKs4cStGwpQ2u.png" alt="sk_pt2.png"></p>
