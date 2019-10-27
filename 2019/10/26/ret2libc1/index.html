@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="题目地址：ret2libc1 1.查看基本信息文件信息 查看保护  查看ida反汇编  2.定位漏洞及利用分析ida可知，gets()函数存在栈溢出漏洞。但由于开启了堆栈不可执行保护，不能使用ret2shellcode的方法。但是存在system函数。 ret2libcret2libc 即控制函数的执行 libc 中的函数，通常是返回至某个函数的 plt 处或者函数的具体位置(即函数对应的 got">
+<meta name="description" content="题目地址：ret2libc1">
 <meta name="keywords" content="ret2libc">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ret2libc1">
 <meta property="og:url" content="https://hc1024.github.io/2019/10/26/ret2libc1/index.html">
 <meta property="og:site_name" content="HC1024">
-<meta property="og:description" content="题目地址：ret2libc1 1.查看基本信息文件信息 查看保护  查看ida反汇编  2.定位漏洞及利用分析ida可知，gets()函数存在栈溢出漏洞。但由于开启了堆栈不可执行保护，不能使用ret2shellcode的方法。但是存在system函数。 ret2libcret2libc 即控制函数的执行 libc 中的函数，通常是返回至某个函数的 plt 处或者函数的具体位置(即函数对应的 got">
+<meta property="og:description" content="题目地址：ret2libc1">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://i.loli.net/2019/10/26/7QNv3PXOGewji1d.png">
 <meta property="og:image" content="https://i.loli.net/2019/10/26/MpOBikcTCRv5Hjx.png">
@@ -94,10 +94,10 @@
 <meta property="og:image" content="https://i.loli.net/2019/10/26/MpkRGvQd9i1KXAf.png">
 <meta property="og:image" content="https://i.loli.net/2019/10/26/lHXzGCjfFokin8h.png">
 <meta property="og:image" content="https://i.loli.net/2019/10/26/WGDiXUECVTSyYfF.png">
-<meta property="og:updated_time" content="2019-10-26T16:00:47.625Z">
+<meta property="og:updated_time" content="2019-10-27T03:22:31.664Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ret2libc1">
-<meta name="twitter:description" content="题目地址：ret2libc1 1.查看基本信息文件信息 查看保护  查看ida反汇编  2.定位漏洞及利用分析ida可知，gets()函数存在栈溢出漏洞。但由于开启了堆栈不可执行保护，不能使用ret2shellcode的方法。但是存在system函数。 ret2libcret2libc 即控制函数的执行 libc 中的函数，通常是返回至某个函数的 plt 处或者函数的具体位置(即函数对应的 got">
+<meta name="twitter:description" content="题目地址：ret2libc1">
 <meta name="twitter:image" content="https://i.loli.net/2019/10/26/7QNv3PXOGewji1d.png">
 
 
@@ -380,6 +380,8 @@
 
       
         <p>题目地址：<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/stackoverflow/ret2libc/ret2libc1" target="_blank" rel="noopener">ret2libc1</a></p>
+<a id="more"></a>
+
 <h1 id="1-查看基本信息"><a href="#1-查看基本信息" class="headerlink" title="1.查看基本信息"></a>1.查看基本信息</h1><h2 id="文件信息"><a href="#文件信息" class="headerlink" title="文件信息"></a>文件信息</h2><p><img src="https://i.loli.net/2019/10/26/7QNv3PXOGewji1d.png" alt="r2lbc1.png"></p>
 <p><strong>查看保护</strong></p>
 <p><img src="https://i.loli.net/2019/10/26/MpOBikcTCRv5Hjx.png" alt="r2lbc2.png"></p>
