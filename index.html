@@ -410,37 +410,37 @@
           
             <p>最近在参加xman冬令营培训，学习移动安全，今天做了几个简单的android crackme，写篇博客记录一下。</p>
 <h1 id="一-Heziran"><a href="#一-Heziran" class="headerlink" title="一.Heziran"></a>一.Heziran</h1><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>下载下apk文件后放到模拟器中安装，先打开看看。</p>
-<p><img src="/.io//Android-Crackme%5C1.jpg" alt="image-20200115230505256"></p>
+<p><img src="https://i.loli.net/2020/01/15/PXAjbGKWJLY9QRe.png" alt="adcm1.jpg"></p>
 <p>尝试登录</p>
-<p><img src="/.io//Android-Crackme%5C2.jpg" alt="image-20200115230704190"></p>
+<p><img src="https://i.loli.net/2020/01/15/aD8uhQYbnT6zUR1.png" alt="adcm2.jpg"></p>
 <h2 id="2-查看源码"><a href="#2-查看源码" class="headerlink" title="2.查看源码"></a>2.查看源码</h2><p>用MT管理器打开apk文件（进入/data/app/目录下寻找，按安装时间来找），在两个.dex文件中寻找了一下没有找到ManActivity，发现一个可疑的zip文件，进去看看发现一堆.dex文件</p>
-<p><img src="/.io//Android-Crackme%5C3.jpg" alt="image-20200115231123822"></p>
+<p><img src="https://i.loli.net/2020/01/15/J7XHEanNQWLMcsA.png" alt="adcm3.jpg"></p>
 <p>用Dex编辑器++全部打开，找到manactivity点进去，搜索“登录失败”，定位到目标代码段。</p>
-<p><img src="/.io//Android-Crackme%5C4.jpg" alt="image-20200115231344379"></p>
+<p><img src="https://i.loli.net/2020/01/15/EtiyNpxc4X78Kme.png" alt="adcm4.jpg"></p>
 <p>向上找，即可发现登录的用户名密码，都是明文存储的，回app内验证一下：</p>
-<p><img src="/.io//Android-Crackme%5C5.jpg" alt="image-20200115231532725"></p>
+<p><img src="https://i.loli.net/2020/01/15/keilqK2dfQ713Ox.png" alt="adcm5.jpg"></p>
 <p>成功。</p>
 <h1 id="二-任意登录"><a href="#二-任意登录" class="headerlink" title="二.任意登录"></a>二.任意登录</h1><h2 id="1-收集信息"><a href="#1-收集信息" class="headerlink" title="1.收集信息"></a>1.收集信息</h2><p>安装好apk后打开看看</p>
-<p><img src="/.io//Android-Crackme%5C6.jpg" alt="image-20200115231810843"></p>
+<p><img src="https://i.loli.net/2020/01/15/UKigL4t78Rzmhwv.png" alt="adcm6.jpg"></p>
 <h2 id="2-工具分析"><a href="#2-工具分析" class="headerlink" title="2.工具分析"></a>2.工具分析</h2><p>使用jadx查看源码</p>
-<p><img src="/.io//Android-Crackme%5C7.jpg" alt="image-20200115232205858"></p>
+<p><img src="https://i.loli.net/2020/01/15/VIlacWxruR8ozEO.png" alt="adcm7.jpg"></p>
 <p>发现明文的用户名密码，显然这题我们已经拿到正确的用户名密码了，我就不贴验证的图了。但我们的目的是实现任意用户名密码登录。所以要想办法修改程序的smali代码并进行重新打包编译签名。</p>
 <h3 id="1-分析smali代码"><a href="#1-分析smali代码" class="headerlink" title="(1).分析smali代码"></a>(1).分析smali代码</h3><p>定位到checkSN函数</p>
-<p><img src="/.io//Android-Crackme%5C8.jpg" alt="image-20200115232617695"></p>
+<p><img src="https://i.loli.net/2020/01/15/8kQfunsjoPbq7TK.png" alt="adcm8.jpg"></p>
 <p>耐心看明白这些if-eqz的含义就是判断输入的用户名密码是否正确，因此最简单的部分就是让程序跳过这部分代码。</p>
 <h3 id="2-Androidkiller修改程序"><a href="#2-Androidkiller修改程序" class="headerlink" title="(2).Androidkiller修改程序"></a>(2).Androidkiller修改程序</h3><p>这里我们使用Androidkiller来修改代码并重新编译</p>
-<p><img src="/.io//Android-Crackme%5C9.jpg" alt="image-20200115233008411"></p>
+<p><img src="https://i.loli.net/2020/01/15/tmfl5XH1JhvdPeU.png" alt="adcm9.jpg"></p>
 <p>记得修改后一定要保存再重新编译，否则不成功。</p>
-<p><img src="/.io//Android-Crackme%5C10.jpg" alt="image-20200115233116874"></p>
+<p><img src="https://i.loli.net/2020/01/15/GHa9fNmuJpOtRwv.png" alt="adcm10.jpg"></p>
 <h3 id="3-验证"><a href="#3-验证" class="headerlink" title="(3).验证"></a>(3).验证</h3><p>之后在androidkiller安装目录下的projects\demo01\Bin目录下找到重新编译后的apk，安装进模拟器验证是否成功。</p>
-<p><img src="/.io//Android-Crackme%5C11.jpg" alt="image-20200115233418681"></p>
+<p><img src="https://i.loli.net/2020/01/15/IpG6STJcFaqOone.png" alt="adcm11.jpg"></p>
 <p>成功！</p>
 <h1 id="三-注册码"><a href="#三-注册码" class="headerlink" title="三.注册码"></a>三.注册码</h1><p>先打开程序运行一下，要求是输入一个用户名以及此用户名对应的注册码。</p>
-<p><img src="/.io//Android-Crackme%5C12.jpg" alt="image-20200115233801730"></p>
-<h3 id="工具分析"><a href="#工具分析" class="headerlink" title="工具分析"></a>工具分析</h3><p><img src="/.io//Android-Crackme%5C13.jpg" alt="image-20200115234039867"></p>
-<p><img src="/.io//Android-Crackme%5C14.jpg" alt="image-20200115234055682"></p>
+<p><img src="https://i.loli.net/2020/01/15/LeUwd17uKniW6Tg.png" alt="adcm12.jpg"></p>
+<h3 id="工具分析"><a href="#工具分析" class="headerlink" title="工具分析"></a>工具分析</h3><p><img src="https://i.loli.net/2020/01/15/5cUWaeSQtXqJRsH.png" alt="adcm13.jpg"></p>
+<p><img src="https://i.loli.net/2020/01/15/LKDIWRApBlVJfzx.png" alt="adcm14.jpg"></p>
 <p>这是两段关键代码，分析即可明白，注册码即为输入的用户名取md5后去掉奇数位字符手剩下的字符串。</p>
-<h3 id="py脚本"><a href="#py脚本" class="headerlink" title="py脚本"></a>py脚本</h3><p><img src="/.io//Android-Crackme%5C15.jpg" alt="image-20200115234333426"></p>
+<h3 id="py脚本"><a href="#py脚本" class="headerlink" title="py脚本"></a>py脚本</h3><p><img src="https://i.loli.net/2020/01/15/4txOXzWDAG2JEvu.png" alt="adcm15.jpg"></p>
 <p>脚本代码：</p>
 <p><code>import hashlib</code></p>
 <p><code>your_str = input(&quot;Please input your username: &quot;)</code></p>
